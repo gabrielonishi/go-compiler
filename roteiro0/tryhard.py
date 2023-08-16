@@ -25,13 +25,26 @@ for character in expression:
         if not character in operators:
             token += character
         else:
-            tokens.append(token)
+            tokens.append(int(token))
             tokens.append(character)
             token = ''
 
-tokens.append(token)
+tokens.append(int(token))
 print(tokens)
 
-# Análise Sintática
+# Análise Sintática e Semântica
 
-for token in 
+last_number = tokens[0]
+last_operator = ''
+
+for token in tokens[1:]:
+    if token in operators:
+        last_operator = token
+    else:
+        if last_operator == '-':
+            last_number = last_number - token
+        elif last_operator == '+':
+            last_number = last_number + token
+
+print(last_number)
+
