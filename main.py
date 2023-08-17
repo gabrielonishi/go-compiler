@@ -8,7 +8,7 @@ inteiros de múltiplos dígitos. Ao final exibe o resultado da operação.
 import sys
 
 
-alphabet = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', '-', '+']
+alphabet = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', '    ', '\n', '\t', '-', '+']
 operators = ['-', '+']
 algarisms = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 
@@ -29,7 +29,8 @@ def lexical(expression:str) -> str:
 
     for character in expression:
         if character not in alphabet:
-            raise ValueError('Erro Léxico: Caractere não esperado')
+            print(character)
+            raise ValueError(f'Erro Léxico: Caractere não esperado')
         if character != ' ':
             if character not in operators:
                 last_token += character
