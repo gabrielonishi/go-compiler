@@ -11,6 +11,7 @@ import sys
 alphabet = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', '    ', '\n', '\t', '-', '+']
 operators = ['-', '+']
 algarisms = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+blank_chars = ['\n', '\t', ' ']
 
 def main(expression):
 
@@ -29,9 +30,8 @@ def lexical(expression:str) -> str:
 
     for character in expression:
         if character not in alphabet:
-            print(character)
             raise ValueError(f'Erro Léxico: Caractere não esperado')
-        if character != ' ':
+        if character not in blank_chars:
             if character not in operators:
                 last_token += character
             else:
@@ -46,6 +46,8 @@ def lexical(expression:str) -> str:
     # Exceção: primeiro número negativo
     if tokens[0] == '-' and tokens[1][0] in algarisms:
         tokens = [tokens[0] + tokens[1]] + tokens[2:]
+
+    print(tokens)
     
     return tokens
 
