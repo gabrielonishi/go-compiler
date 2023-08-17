@@ -40,14 +40,12 @@ def lexical(expression:str) -> str:
                 tokens.append(character)
                 last_token = ''
 
-    if last_token in alphabet:
+    if last_token[-1] in alphabet:
         tokens.append(last_token)
     
     # Exceção: primeiro número negativo
     if tokens[0] == '-' and tokens[1][0] in algarisms:
         tokens = [tokens[0] + tokens[1]] + tokens[2:]
-
-    print(tokens)
     
     return tokens
 
