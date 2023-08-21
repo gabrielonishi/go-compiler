@@ -68,7 +68,7 @@ class Parser:
                 if Parser.tokenizer.next.value == '-':
                     Parser.tokenizer.selectNext()
                     if Parser.tokenizer.next.type == 'INT':
-                        result -= Parser.tokenizer.next.type
+                        result -= Parser.tokenizer.next.value
                     else:
                         raise ValueError(f'Caractere {Parser.tokenizer.next.value} não esperado em position = {Parser.tokenizer.position}')
                 Parser.tokenizer.selectNext()
