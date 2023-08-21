@@ -1,93 +1,93 @@
+'''
+Roteiro 1 - Simple Calculator v1.0
+'''
+
 import sys
 
-alphabet = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', '\n', '\t', '-', '+']
-algarisms = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-blank_chars = [' ', '\n', '\t']
-operators = ['-', '+']
+class Token:
+    def __init__(self, value:int | str, type:str) -> None:
+        self.value = value
+        self.type = type
 
-def main(expression:str) -> int:
-    alphabet_check(expression)
-    tokens = tokenize(expression)
-    syntax_check(tokens)
-    result = operate(tokens)
+class Tokenizer:
+    def __init__(self, source:str) -> None:
+        self.source = source
+        self.position = 0
+        self.next = None
 
-    return result
+    def selectNext(self) -> None:
+        '''Lê o próximo token e atualiza o atributo next'''
 
-def alphabet_check(expression:str)->None:
-    '''
-    Verifica se existe algum caractere não esperado
-    '''
-    for character in expression:
-        if character not in alphabet:
-            raise ValueError(f'Erro Léxico: Caractere {character} não esperado')
+        alphabet = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', '\n', '\t', '-', '+']
+        algarisms = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
         
-def tokenize(expression:str) -> str:
-    '''
-    Divide a expressão em tokens
-    '''
+        next_is_blank = True
+        while next_is_blank:
+            next_is_blank = False
+            if len(self.source) == self.position:
+                self.next = Token(value='"', type='EOF')
+            elif self.source[self.position] in alphabet:
+                if self.source[self.position] == '-':
+                    self.next = Token(value='-', type='MINUS')
+                    self.position += 1
+                elif self.source[self.position] == '+':
+                    self.next = Token(value='+', type='PLUS')
+                    self.position += 1
+                elif self.source[self.position] in algarisms:
+                    this_value = ""
+                    while self.position != len(self.source) and self.source[self.position] in algarisms:
+                        this_value += self.source[self.position]
+                        self.position += 1
+                    self.next = Token(value=int(this_value), type='INT')
+                else: 
+                    # É um caractere em branco
+                    self.position += 1
+                    next_is_blank = True
+            else:
+                raise ValueError(f'Caractere não esperado na posição {self.position}')
 
-    last_token = ''
-    tokens = list()
-    for character in expression:
-        if character in operators:
-            if len(last_token)>0:
-                tokens.append(last_token)
-                last_token=''
-            tokens.append(character)
-        elif character in algarisms:
-            last_token += character
+class Parser:
+    tokenizer = None
+
+    @staticmethod
+    def parseExpression():
+        '''
+        Consome tokens do Tokenizer e analisa se a sintaxe está aderente à gramática proposta
+        '''
+        result = 0
+        if Parser.tokenizer.next.type == 'INT':
+            result = Parser.tokenizer.next.value
+            Parser.tokenizer.selectNext()
+            while(Parser.tokenizer.next.type == 'MINUS' or Parser.tokenizer.next.type == 'PLUS'):
+                if Parser.tokenizer.next.value == '+':
+                    Parser.tokenizer.selectNext()
+                    if Parser.tokenizer.next.type == 'INT':
+                        result += Parser.tokenizer.next.value
+                    else:
+                        raise ValueError(f'Caractere {Parser.tokenizer.next.value} não esperado em position = {Parser.tokenizer.position}')
+                if Parser.tokenizer.next.value == '-':
+                    Parser.tokenizer.selectNext()
+                    if Parser.tokenizer.next.type == 'INT':
+                        result -= Parser.tokenizer.next.type
+                    else:
+                        raise ValueError(f'Caractere {Parser.tokenizer.next.value} não esperado em position = {Parser.tokenizer.position}')
+                Parser.tokenizer.selectNext()
+            return result
+        raise ValueError(f'Primeiro caractere {Parser.tokenizer.next.value} precisa ser do tipo INT, mas é do tipo {Parser.tokenizer.next.type}')
+    
+    @staticmethod
+    def run(code:str):
+        Parser.tokenizer = Tokenizer(code)
+        Parser.tokenizer.selectNext()
+        result = Parser.parseExpression()
+        if Parser.tokenizer.next.type == 'EOF':
+            return result
         else:
-            if len(last_token)>0:
-                tokens.append(last_token)
-                last_token=''
-    
-    if len(last_token)>0:
-        tokens.append(last_token)
-        last_token=''
-
-    # Exceção: primeiro número negativo
-    if tokens[0] == '-' and tokens[1][0] in algarisms:
-        tokens = [tokens[0] + tokens[1]] + tokens[2:]
-    
-    return tokens
-
-def syntax_check(tokens:str) -> None:
-    '''
-    Verifica se a sintaxe faz sentido. Interrompe se:
-     - Houver dois números consecutivos (ex: '1 + 1  2')
-     - Houver dois operadores consecutivos (ex: '1 ++ 1')
-     - Enunciado acabar com operador (ex: '1 + 1 -')
-     - Enunciado não começar com um número (ex: +)
-    '''
-    last_token = tokens[0]
-
-    for token in tokens[1:]:
-        if last_token[-1] in algarisms and token[-1] in algarisms:
-            raise ValueError('Erro de Sintaxe: Dois números consecutivos')
-        elif last_token[-1] in operators and token[-1] in operators:
-            raise ValueError('Erro de Sintaxe: Dois operadores consecutivos')
-        last_token = token
-    
-    if last_token in operators:
-        raise ValueError('Erro de Sintaxe: Último caractere não pode ser uma operação')
-
-    if tokens[0] not in algarisms:
-        raise ValueError('Erro de Sintaxe: Operação deve começar com um número')
-
-def operate(tokens:str) -> int:
-    result_pile = int(tokens[0])
-    last_operator = ''
-    for token in tokens:
-        if token in operators:
-            last_operator = token
-        elif last_operator == '-':
-            result_pile -= int(token)
-            last_operator = ''
-        elif last_operator == '+':
-            result_pile += int(token)
-            last_operator = ''
-    return result_pile
+            raise ValueError('Fim não esperado')
+        # if Parser.tokenizer.next.type == 'EOF':
+        #     return Parser.parseExpression()
+        # else:
+        #     raise ValueError('Fim não esperado')
 
 if __name__ == '__main__':
-    print(main(expression=sys.argv[1]))
-    
+    print(Parser.run(sys.argv[1]))
