@@ -2,10 +2,11 @@
 Roteiro 1 - Simple Calculator v1.0
 '''
 
+import typing
 import sys
 
 class Token:
-    def __init__(self, value:int | str, type:str) -> None:
+    def __init__(self, value: typing.Union[int, str], type:str) -> None:
         self.value = value
         self.type = type
 
