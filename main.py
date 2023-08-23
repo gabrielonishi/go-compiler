@@ -4,13 +4,29 @@ Roteiro 1 - Simple Calculator v1.0
 
 import typing
 import sys
+from enum import Enum, auto
+
+class TokenType(Enum):
+    '''
+    Classe para armazenar o tipo de token como uma variável
+    '''
+    EOF = auto()
+    INT = auto()
+    PLUS = auto()
+    MINUS = auto()
 
 class Token:
-    def __init__(self, value: typing.Union[int, str], type:str) -> None:
+    '''
+    Encapsula informações definidoras de um token
+    '''
+    def __init__(self, value: typing.Union[int, str], type:TokenType) -> None:
         self.value = value
         self.type = type
 
 class Tokenizer:
+    '''
+    Transforma uma sequência de caracteres em tokens
+    '''
     def __init__(self, source:str) -> None:
         self.source = source
         self.position = 0
@@ -26,20 +42,20 @@ class Tokenizer:
         while next_is_blank:
             next_is_blank = False
             if len(self.source) == self.position:
-                self.next = Token(value='"', type='EOF')
+                self.next = Token(value='"', type=TokenType.EOF)
             elif self.source[self.position] in alphabet:
                 if self.source[self.position] == '-':
-                    self.next = Token(value='-', type='MINUS')
+                    self.next = Token(value='-', type=TokenType.MINUS)
                     self.position += 1
                 elif self.source[self.position] == '+':
-                    self.next = Token(value='+', type='PLUS')
+                    self.next = Token(value='+', type=TokenType.PLUS)
                     self.position += 1
                 elif self.source[self.position] in algarisms:
                     this_value = ""
                     while self.position != len(self.source) and self.source[self.position] in algarisms:
                         this_value += self.source[self.position]
                         self.position += 1
-                    self.next = Token(value=int(this_value), type='INT')
+                    self.next = Token(value=int(this_value), type=TokenType.INT)
                 else: 
                     # É um caractere em branco
                     self.position += 1
@@ -48,6 +64,9 @@ class Tokenizer:
                 raise ValueError(f'Caractere não esperado na posição {self.position}')
 
 class Parser:
+    '''
+    Classe estática que analisa a estrutura da expressão e realiza operações.
+    '''
     tokenizer = None
 
     @staticmethod
@@ -56,19 +75,19 @@ class Parser:
         Consome tokens do Tokenizer e analisa se a sintaxe está aderente à gramática proposta
         '''
         result = 0
-        if Parser.tokenizer.next.type == 'INT':
+        if Parser.tokenizer.next.type == TokenType.INT:
             result = Parser.tokenizer.next.value
             Parser.tokenizer.selectNext()
-            while(Parser.tokenizer.next.type == 'MINUS' or Parser.tokenizer.next.type == 'PLUS'):
+            while(Parser.tokenizer.next.type == TokenType.MINUS or Parser.tokenizer.next.type == TokenType.PLUS):
                 if Parser.tokenizer.next.value == '+':
                     Parser.tokenizer.selectNext()
-                    if Parser.tokenizer.next.type == 'INT':
+                    if Parser.tokenizer.next.type == TokenType.INT:
                         result += Parser.tokenizer.next.value
                     else:
                         raise ValueError(f'Caractere {Parser.tokenizer.next.value} não esperado em position = {Parser.tokenizer.position}')
                 if Parser.tokenizer.next.value == '-':
                     Parser.tokenizer.selectNext()
-                    if Parser.tokenizer.next.type == 'INT':
+                    if Parser.tokenizer.next.type == TokenType.INT:
                         result -= Parser.tokenizer.next.value
                     else:
                         raise ValueError(f'Caractere {Parser.tokenizer.next.value} não esperado em position = {Parser.tokenizer.position}')
@@ -81,7 +100,7 @@ class Parser:
         Parser.tokenizer = Tokenizer(code)
         Parser.tokenizer.selectNext()
         result = Parser.parseExpression()
-        if Parser.tokenizer.next.type == 'EOF':
+        if Parser.tokenizer.next.type == TokenType.EOF:
             return result
         else:
             raise ValueError('Fim não esperado')
