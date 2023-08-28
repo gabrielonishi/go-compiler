@@ -32,7 +32,7 @@ class Tokenizer:
         self.position = 0
         self.next = None
 
-    def selectNext(self) -> None:
+    def select_next(self) -> None:
         '''Lê o próximo token e atualiza o atributo next'''
 
         alphabet = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', '\n', '\t', '-', '+']
@@ -69,36 +69,36 @@ class Parser:
     tokenizer = None
 
     @staticmethod
-    def parseExpression():
+    def parse_expression():
         '''
         Consome tokens do Tokenizer e analisa se a sintaxe está aderente à gramática proposta
         '''
         result = 0
         if Parser.tokenizer.next.type == TokenType.INT:
             result = Parser.tokenizer.next.value
-            Parser.tokenizer.selectNext()
+            Parser.tokenizer.select_next()
             while(Parser.tokenizer.next.type == TokenType.MINUS or Parser.tokenizer.next.type == TokenType.PLUS):
                 if Parser.tokenizer.next.value == '+':
-                    Parser.tokenizer.selectNext()
+                    Parser.tokenizer.select_next()
                     if Parser.tokenizer.next.type == TokenType.INT:
                         result += Parser.tokenizer.next.value
                     else:
                         raise ValueError(f'Caractere {Parser.tokenizer.next.value} não esperado em position = {Parser.tokenizer.position}')
                 if Parser.tokenizer.next.value == '-':
-                    Parser.tokenizer.selectNext()
+                    Parser.tokenizer.select_next()
                     if Parser.tokenizer.next.type == TokenType.INT:
                         result -= Parser.tokenizer.next.value
                     else:
                         raise ValueError(f'Caractere {Parser.tokenizer.next.value} não esperado em position = {Parser.tokenizer.position}')
-                Parser.tokenizer.selectNext()
+                Parser.tokenizer.select_next()
             return result
         raise ValueError(f'Primeiro caractere {Parser.tokenizer.next.value} precisa ser do tipo INT, mas é do tipo {Parser.tokenizer.next.type}')
     
     @staticmethod
     def run(code:str):
         Parser.tokenizer = Tokenizer(code)
-        Parser.tokenizer.selectNext()
-        result = Parser.parseExpression()
+        Parser.tokenizer.select_next()
+        result = Parser.parse_expression()
         if Parser.tokenizer.next.type == TokenType.EOF:
             return result
         else:
