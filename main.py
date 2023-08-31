@@ -80,6 +80,8 @@ class Parser:
         if Parser.tokenizer.next.type == TokenType.INT:
             term = Parser.tokenizer.next.value
             Parser.tokenizer.select_next()
+            if Parser.tokenizer.next.type == TokenType.INT:
+                raise ValueError('Erro de dois números consecutivos')
             while(Parser.tokenizer.next.type == TokenType.DIV or Parser.tokenizer.next.type == TokenType.MULT):
                 if Parser.tokenizer.next.value == '*':
                     Parser.tokenizer.select_next()
@@ -109,10 +111,16 @@ class Parser:
             while Parser.tokenizer.next.value == '-' or Parser.tokenizer.next.value == '+':
                 if Parser.tokenizer.next.value == '-':
                     Parser.tokenizer.select_next()
-                    result -= Parser.parse_term()
+                    if Parser.tokenizer.next.type == TokenType.INT:
+                        result -= Parser.parse_term()
+                    else:
+                        raise ValueError(f'Caractere {Parser.tokenizer.next.value} não esperado em position = {Parser.tokenizer.position}')
                 if Parser.tokenizer.next.value == '+':
                     Parser.tokenizer.select_next()
-                    result += Parser.parse_term()
+                    if Parser.tokenizer.next.type == TokenType.INT:
+                        result += Parser.parse_term()
+                    else:
+                        raise ValueError(f'Caractere {Parser.tokenizer.next.value} não esperado em position = {Parser.tokenizer.position}')
         return result
     
     @staticmethod
