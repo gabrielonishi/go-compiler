@@ -29,6 +29,9 @@ class Tokenizer:
     '''
     Transforma uma sequência de caracteres em tokens
     '''
+
+    OPERATORS = ['-', '+', '*', '/']
+    
     def __init__(self, source:str) -> None:
         self.source = source
         self.position = 0
@@ -37,38 +40,30 @@ class Tokenizer:
     def select_next(self) -> None:
         '''Lê o próximo token e atualiza o atributo next'''
 
-        alphabet = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', '\n', '\t', '-', '+', '*', '/']
-        
-        next_is_blank = True
-        while next_is_blank:
-            next_is_blank = False
-            if len(self.source) == self.position:
-                self.next = Token(value='"', type=TokenType.EOF)
-            elif self.source[self.position] in alphabet:
-                if self.source[self.position] == '-':
+        if len(self.source) == self.position:
+            self.next = Token(value='"', type=TokenType.EOF)
+        elif self.source[self.position] in Tokenizer.OPERATORS:
+            match self.source[self.position]:
+                case '-':
                     self.next = Token(value='-', type=TokenType.MINUS)
-                    self.position += 1
-                elif self.source[self.position] == '+':
+                case '+':
                     self.next = Token(value='+', type=TokenType.PLUS)
-                    self.position += 1
-                elif self.source[self.position] == '*':
+                case '*':
                     self.next = Token(value='*', type=TokenType.MULT)
-                    self.position += 1
-                elif self.source[self.position] == '/':
+                case '/':
                     self.next = Token(value='/', type=TokenType.DIV)
-                    self.position += 1
-                elif self.source[self.position].isdigit():
-                    this_value = ""
-                    while self.position != len(self.source) and self.source[self.position].isdigit():
-                        this_value += self.source[self.position]
-                        self.position += 1
-                    self.next = Token(value=int(this_value), type=TokenType.INT)
-                else: 
-                    # É um caractere em branco
-                    self.position += 1
-                    next_is_blank = True
-            else:
-                raise ValueError(f'Caractere não esperado na posição {self.position}')
+            self.position += 1
+        elif self.source[self.position].isdigit():
+            this_value = ''
+            while self.position != len(self.source) and self.source[self.position].isdigit():
+                this_value += self.source[self.position]
+                self.position += 1
+            self.next = Token(value=int(this_value), type=TokenType.INT)
+        elif self.source[self.position].isspace():
+                self.position += 1
+                Parser.tokenizer.select_next()
+        else:
+            raise ValueError(f"Caractere {self.source[self.position]} não esperado na posição {self.position}")
 
 class Parser:
     '''
@@ -108,20 +103,21 @@ class Parser:
         Consome tokens do Tokenizer e analisa se a sintaxe está aderente à gramática proposta
         '''
         result = 0
+
         while Parser.tokenizer.next.type != TokenType.EOF:
             result = Parser.parse_term()
-            if Parser.tokenizer.next.value == '-':
-                Parser.tokenizer.select_next()
-                result -= Parser.parse_term()
-            if Parser.tokenizer.next.value == '+':
-                Parser.tokenizer.select_next()
-                result += Parser.parse_term()
-        
+            while Parser.tokenizer.next.value == '-' or Parser.tokenizer.next.value == '+':
+                if Parser.tokenizer.next.value == '-':
+                    Parser.tokenizer.select_next()
+                    result -= Parser.parse_term()
+                if Parser.tokenizer.next.value == '+':
+                    Parser.tokenizer.select_next()
+                    result += Parser.parse_term()
         return result
     
     @staticmethod
     def run(code:str):
-        Parser.tokenizer = Tokenizer(code)
+        Parser.tokenizer = Tokenizer(source=code)
         Parser.tokenizer.select_next()
         result = Parser.parse_expression()
         return result
