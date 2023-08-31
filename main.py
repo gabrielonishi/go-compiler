@@ -43,15 +43,24 @@ class Tokenizer:
         if len(self.source) == self.position:
             self.next = Token(value='"', type=TokenType.EOF)
         elif self.source[self.position] in Tokenizer.OPERATORS:
-            match self.source[self.position]:
-                case '-':
-                    self.next = Token(value='-', type=TokenType.MINUS)
-                case '+':
-                    self.next = Token(value='+', type=TokenType.PLUS)
-                case '*':
-                    self.next = Token(value='*', type=TokenType.MULT)
-                case '/':
-                    self.next = Token(value='/', type=TokenType.DIV)
+            if self.source[self.position] == '-':
+                self.next = Token(value='-', type=TokenType.MINUS)
+            elif self.source[self.position] == '+':
+                self.next = Token(value='+', type=TokenType.PLUS)
+            elif self.source[self.position] == '*':
+                self.next = Token(value='*', type=TokenType.MULT)
+            elif self.source[self.position] == '/':
+                self.next = Token(value='/', type=TokenType.DIV)
+            # match self.source[self.position]:
+            #     case '-':
+            #         self.next = Token(value='-', type=TokenType.MINUS)
+            #     case '+':
+            #         self.next = Token(value='+', type=TokenType.PLUS)
+            #     case '*':
+            #         self.next = Token(value='*', type=TokenType.MULT)
+            #     case '/':
+            #         self.next = Token(value='/', type=TokenType.DIV)
+            
             self.position += 1
         elif self.source[self.position].isdigit():
             this_value = ''
