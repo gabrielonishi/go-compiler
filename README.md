@@ -4,9 +4,18 @@ Projeto individual de um compilador para a disciplina Lógica da Computação, d
 
 ![git status](http://3.129.230.99/svg/gabrielonishi/comp-log-compiler/)
 
-### Diagrama Sintático (v1.0)
+### Diagrama Sintático (v1.1)
 
-![Diagrama sintático](./diagram.drawio.png)
+![Diagrama sintático](./diagrama-roteiro2.png)
+
+### EBNF (v1.1)
+
+```
+EXPRESSION = TERM, {("+" | "-" ), TERM} ;
+TERM = NUMBER, {("*" | "/"), NUMBER} ;
+NUMBER = DIGIT, {DIGIT} ;
+DIGIT = 0 | 1 | ... | 9 ;
+```
 
 ### Operando com tags
 

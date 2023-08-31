@@ -9,9 +9,18 @@
 2. Implementar as melhorias conforme o DS atualizado.
 3. Prestar muita atenção nos lugares onde será necessário alterar.
 
-### Diagrama Sintático (v1.1)
+### Diagrama Sintático (v1.2)
 
-![Diagrama sintático](./diagram.drawio.png)
+![Diagrama sintático](./diagrama-roteiro2.png)
+
+### EBNF
+
+```
+EXPRESSION = TERM, {("+" | "-" ), TERM} ;
+TERM = NUMBER, {("*" | "/"), NUMBER} ;
+NUMBER = DIGIT, {DIGIT} ;
+DIGIT = 0 | 1 | ... | 9 ;
+```
 
 ### Rodando o Programa
 
@@ -21,11 +30,19 @@ python main.py '1+1'
 
 **Base de Testes**:
 ```bash
->> 1+2
+Sem erros:
 >> 3-2
->> 1+2-3
+>> 1
 >> 11+22-33
->> 789 +345 - 123
+>> 4/2+3
+>> 3+4/2
+```
+```bash
+Com erros:
+>> +3
+>> 3+
+>>
+>> 3*/ 3 +
 ```
 
 
