@@ -1,13 +1,14 @@
-# Roteiro 2
+# Roteiro 3
 
 ### Objetivos do Roteiro
-1. Implementar operação de MULT e DIV.
-2. Ignorar comentários.
+1. Implementar operadores unários.
+2. Implementar parênteses.
 
 ### Tarefas do Roteiro:
 1. Atualizar o Diagrama Sintático e a EBNF no GitHub.
 2. Implementar as melhorias conforme o DS atualizado.
 3. Prestar muita atenção nos lugares onde será necessário alterar.
+4. Dica: posicionar no primeiro token logo no run(). Só chamar o selectNext() quando consumir um token
 
 ### Diagrama Sintático (v1.2)
 
@@ -30,19 +31,11 @@ python main.py '1+1'
 
 **Base de Testes**:
 ```bash
-Sem erros:
->> 3-2
->> 1
->> 11+22-33
->> 4/2+3
->> 3+4/2
-```
-```bash
-Com erros:
->> +3
->> 3+
->>
->> 3*/ 3 +
+>> (3 + 2) /5
+>> +--++3
+>> 3 - -2/4
+>> 4/(1+1)*2
+>> (2*2
 ```
 
 
