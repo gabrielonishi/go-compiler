@@ -95,7 +95,7 @@ class Parser:
         if Parser.tokenizer.next.type == TokenType.INT:
             factor = Parser.tokenizer.next.value
             Parser.tokenizer.select_next()
-            return factor
+            return int(factor)
         elif Parser.tokenizer.next.type == TokenType.MINUS:
             Parser.tokenizer.select_next()
             factor = Parser.parse_factor()
@@ -131,7 +131,7 @@ class Parser:
                 factor *= Parser.parse_factor()
             elif Parser.tokenizer.next.value == '/':
                 Parser.tokenizer.select_next()
-                factor /= Parser.parse_factor()
+                factor //= Parser.parse_factor()
 
         return factor
 
