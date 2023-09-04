@@ -12,7 +12,7 @@
 
 ### Diagrama Sintático (v1.2)
 
-![Diagrama sintático](./diagrama-roteiro2.png)
+![Diagrama sintático](./diagrama-roteiro3.png)
 
 ### EBNF
 
