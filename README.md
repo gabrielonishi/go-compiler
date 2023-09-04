@@ -6,13 +6,14 @@ Projeto individual de um compilador para a disciplina Lógica da Computação, d
 
 ### Diagrama Sintático (v1.1)
 
-![Diagrama sintático](./diagrama-roteiro2.png)
+![Diagrama sintático](./diagrama-roteiro3.png)
 
 ### EBNF (v1.1)
 
 ```
-EXPRESSION = TERM, {("+" | "-" ), TERM} ;
-TERM = NUMBER, {("*" | "/"), NUMBER} ;
+EXPRESSION = TERM, { ("+" | "-"), TERM } ;
+TERM = FACTOR, { ("*" | "/"), FACTOR } ;
+FACTOR = ("+" | "-") FACTOR | "(" EXPRESSION ")" | NUMBER ;
 NUMBER = DIGIT, {DIGIT} ;
 DIGIT = 0 | 1 | ... | 9 ;
 ```
