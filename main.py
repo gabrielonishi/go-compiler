@@ -76,14 +76,15 @@ class Tokenizer:
             Parser.tokenizer.select_next()
         else:
             raise ValueError(
-                f"Erro Tokenizer: Caractere {self.source[self.position]} não esperado na posição {self.position}")
+                f"TOKENIZER ERRO: Caractere {self.source[self.position]} não esperado na posição {self.position}")
 
 
 class Parser:
     '''
     Classe estática que analisa a estrutura da expressão e realiza operações.
 
-    Métodos:
+    Métodos (em ordem de maior prioridade para menor):
+     - parse_factor(): Calcula operações unárias + expressões entre aspas
      - parse_term(): Calcula o próximo termo (multiplicação e divisão)
      - parse_expression(): Calcula soma e subtração de um termo
      - run(code): Inicializa o tokenizer e inicia o cálculo
@@ -112,17 +113,17 @@ class Parser:
                 return expression
             else:
                 raise ValueError(
-                    f'Problema de fechamento de aspas em {Parser.tokenizer.position}')
+                    f'PARSE FACTOR ERROR: Problema de fechamento de aspas em {Parser.tokenizer.position}')
         else:
             raise ValueError(
-                f'Caractere {Parser.tokenizer.next.value} não esperado na posição {Parser.tokenizer.position}')
+                f'PARSE FACTOR ERROR: Caractere {Parser.tokenizer.next.value} não esperado na posição {Parser.tokenizer.position}')
 
     @staticmethod
     def parse_term() -> int:
         '''
         Consome tokens calculando termo de multiplicação/divisão
         '''
-        
+
         factor = Parser.parse_factor()
 
         while Parser.tokenizer.next.value == '*' or Parser.tokenizer.next.value == '/':
@@ -140,7 +141,6 @@ class Parser:
         '''
         Consome tokens calculando termo de adição/subtração
         '''
-
 
         result = Parser.parse_term()
         while Parser.tokenizer.next.value == '-' or Parser.tokenizer.next.value == '+':
@@ -162,6 +162,7 @@ class Parser:
             raise ValueError("Não consumiu toda a expressão")
 
         print(result)
+
 
 if __name__ == '__main__':
     Parser.run(sys.argv[1])

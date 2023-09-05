@@ -10,7 +10,7 @@
 3. Prestar muita atenção nos lugares onde será necessário alterar.
 4. Dica: posicionar no primeiro token logo no run(). Só chamar o selectNext() quando consumir um token
 
-### Diagrama Sintático (v1.2)
+### Diagrama Sintático (v1.3)
 
 ![Diagrama sintático](./diagrama-roteiro3.png)
 
