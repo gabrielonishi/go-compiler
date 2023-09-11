@@ -140,10 +140,9 @@ class Parser:
         elif Parser.tokenizer.next.value == '(':
             Parser.tokenizer.select_next()
             expression = Parser.parse_expression()
-            node = NoOp(None, [expression])
             if Parser.tokenizer.next.value == ')':
                 Parser.tokenizer.select_next()
-                return node
+                return expression
             else:
                 raise ValueError(
                     f'PARSE FACTOR ERROR: Problema de fechamento de aspas em {Parser.tokenizer.position}')

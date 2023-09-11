@@ -63,11 +63,11 @@ class IntVal(Node):
         return self.value
 
 
-class NoOp():
+class NoOp(Node):
     '''
     No Operation - Nó Dummy
     Não contém filhos
     '''
 
     def evaluate(self):
-        pass
+        return self.value
