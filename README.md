@@ -4,11 +4,11 @@ Projeto individual de um compilador para a disciplina Lógica da Computação, d
 
 ![git status](http://3.129.230.99/svg/gabrielonishi/comp-log-compiler/)
 
-### Diagrama Sintático (v1.3)
+### Diagrama Sintático (v2.0)
 
 ![Diagrama sintático](./diagrama-roteiro3.png)
 
-### EBNF (v1.1)
+### EBNF (v2.0)
 
 ```
 EXPRESSION = TERM, { ("+" | "-"), TERM } ;

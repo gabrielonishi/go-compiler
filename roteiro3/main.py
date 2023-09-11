@@ -5,35 +5,6 @@ Roteiro 1 - Simple Calculator v1.0
 import typing
 import sys
 from enum import Enum, auto
-from nodes import Node, IntVal, NoOp, UnOp, BinOp
-
-
-class PrePro():
-    '''
-    Data pre-process: Faz o pré-processameto dos dados, removendo comentários
-    '''
-
-    @staticmethod
-    def filter(source: str):
-        clean_code = ''
-        i = 0
-        while i<len(source):
-            if source[i] == '/' and source[i+1] == '/':
-                #espera dar source[i] == \n
-                while i<len(source):
-                    if source[i] == '\n':
-                        break
-                    i+=1
-            elif source[i] == '/' and source[i+1] == '*':
-                # espera dar source[i] == '*' and source[i+1] == '/'
-                while i<len(source):
-                    if source[i] == '*' and source[i+1] == '/':
-                        break
-                    i+=1            
-            elif source[i] != '\n':
-                clean_code += source[i]
-            i+=1
-        return clean_code
 
 
 class TokenType(Enum):
@@ -121,35 +92,34 @@ class Parser:
     tokenizer = None
 
     @staticmethod
-    def parse_factor() -> Node:
+    def parse_factor() -> int:
         if Parser.tokenizer.next.type == TokenType.INT:
             factor = Parser.tokenizer.next.value
             Parser.tokenizer.select_next()
-            node = IntVal(factor, [])
-            return node
+            return int(factor)
         elif Parser.tokenizer.next.type == TokenType.MINUS:
             Parser.tokenizer.select_next()
             factor = Parser.parse_factor()
-            node = UnOp('-', [factor])
-            return node
+            return -factor
         elif Parser.tokenizer.next.type == TokenType.PLUS:
             Parser.tokenizer.select_next()
             factor = Parser.parse_factor()
-            node = UnOp('+', [factor])
-            return node
+            return +factor
         elif Parser.tokenizer.next.value == '(':
             Parser.tokenizer.select_next()
             expression = Parser.parse_expression()
-            node = NoOp(None, [expression])
             if Parser.tokenizer.next.value == ')':
                 Parser.tokenizer.select_next()
-                return node
+                return expression
             else:
                 raise ValueError(
                     f'PARSE FACTOR ERROR: Problema de fechamento de aspas em {Parser.tokenizer.position}')
+        else:
+            raise ValueError(
+                f'PARSE FACTOR ERROR: Caractere {Parser.tokenizer.next.value} não esperado na posição {Parser.tokenizer.position}')
 
     @staticmethod
-    def parse_term() -> Node:
+    def parse_term() -> int:
         '''
         Consome tokens calculando termo de multiplicação/divisão
         '''
@@ -159,12 +129,10 @@ class Parser:
         while Parser.tokenizer.next.value == '*' or Parser.tokenizer.next.value == '/':
             if Parser.tokenizer.next.value == '*':
                 Parser.tokenizer.select_next()
-                children = Parser.parse_factor()
-                factor = BinOp(value='*', children=[factor, children])
+                factor *= Parser.parse_factor()
             elif Parser.tokenizer.next.value == '/':
                 Parser.tokenizer.select_next()
-                children = Parser.parse_factor()
-                factor = BinOp(value='/', children=[factor, children])
+                factor //= Parser.parse_factor()
 
         return factor
 
@@ -174,32 +142,27 @@ class Parser:
         Consome tokens calculando termo de adição/subtração
         '''
 
-        term = Parser.parse_term()
+        result = Parser.parse_term()
         while Parser.tokenizer.next.value == '-' or Parser.tokenizer.next.value == '+':
             if Parser.tokenizer.next.value == '-':
                 Parser.tokenizer.select_next()
-                children = Parser.parse_term()
-                term = BinOp(value='-', children=[term, children])
+                result -= Parser.parse_term()
             elif Parser.tokenizer.next.value == '+':
                 Parser.tokenizer.select_next()
-                children = Parser.parse_term()
-                term = BinOp(value='+', children=[term, children])
+                result += Parser.parse_term()
 
-        return term
+        return result
 
     @staticmethod
-    def run(code: str) -> Node:
-        # result = PrePro.filter(code)
+    def run(code: str) -> None:
         Parser.tokenizer = Tokenizer(source=code)
         Parser.tokenizer.select_next()
-        ast = Parser.parse_expression()
+        result = Parser.parse_expression()
         if Parser.tokenizer.next.type != TokenType.EOF:
             raise ValueError("Não consumiu toda a expressão")
-        return ast
+
+        print(result)
+
 
 if __name__ == '__main__':
-    with open(file=sys.argv[1], mode="r") as file:
-        code = file.read()
-    clean_code = PrePro.filter(source=code)
-    root = Parser.run(clean_code)
-    print(root.evaluate())
+    Parser.run(sys.argv[1])
