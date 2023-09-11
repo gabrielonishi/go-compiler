@@ -17,22 +17,17 @@ class PrePro():
     def filter(source: str):
         clean_code = ''
         i = 0
-        while i<len(source):
-            if source[i] == '/' and source[i+1] == '/':
-                #espera dar source[i] == \n
-                while i<len(source):
-                    if source[i] == '\n':
-                        break
-                    i+=1
-            elif source[i] == '/' and source[i+1] == '*':
+        while i < len(source):
+            if source[i:i+2] == '//':
+                while i < len(source) and source[i] != '\n':
+                    i += 1
+            elif source[i:i+2] == '/*':
                 # espera dar source[i] == '*' and source[i+1] == '/'
-                while i<len(source):
-                    if source[i] == '*' and source[i+1] == '/':
-                        break
-                    i+=1            
+                while i < len(source) and source[i:i+1] == '*/':
+                    i += 1
             elif source[i] != '\n':
                 clean_code += source[i]
-            i+=1
+            i += 1
         return clean_code
 
 
@@ -195,6 +190,7 @@ class Parser:
         if Parser.tokenizer.next.type != TokenType.EOF:
             raise ValueError("Não consumiu toda a expressão")
         return ast
+
 
 if __name__ == '__main__':
     with open(file=sys.argv[1], mode="r") as file:
