@@ -1,7 +1,3 @@
-'''
-Roteiro 1 - Simple Calculator v1.0
-'''
-
 import typing
 import sys
 from enum import Enum, auto
@@ -42,6 +38,11 @@ class TokenType(Enum):
     MULT = auto()
     DIV = auto()
     BRACKET = auto()
+    LINEFEED = auto()
+    ATTRIBUTE = auto()
+    PRINT = auto()
+    IDENTIFIER = auto()
+
 
 
 class Token:
@@ -57,6 +58,7 @@ class Token:
 class Tokenizer:
     '''
     Transforma uma sequência de caracteres em tokens
+    Análise léxica do programa
 
     Métodos:
     __init__(source): Inicializa o tokenizer a partir de uma expressão
@@ -88,6 +90,12 @@ class Tokenizer:
                 self.next = Token(value='(', type=TokenType.BRACKET)
             elif self.source[self.position] == ')':
                 self.next = Token(value=')', type=TokenType.BRACKET)
+            elif self.source[self.position] == '\n':
+                self.next = Token(value='\n', type=TokenType.LINEFEED)
+            elif self.source[self.position] == '=':
+                self.next = Token(value='=', type=TokenType.ATTRIBUTE)
+            elif self.source[self.position] == 'println':
+                self.next = Token(value='print', type=TokenType.PRINT)
             self.position += 1
         elif self.source[self.position].isdigit():
             this_value = ''
@@ -95,6 +103,13 @@ class Tokenizer:
                 this_value += self.source[self.position]
                 self.position += 1
             self.next = Token(value=int(this_value), type=TokenType.INT)
+        elif self.source[self.position].isalpha():
+            this_identifier = ''
+            while self.position != len(self.source) and (self.source[self.position].isalpha() or
+                                                         self.source[self.position] == '_'):
+                this_identifier += self.source[self.position]
+                self.position += 1 
+            self.next = Token(value=this_identifier, type=TokenType.IDENTIFIER)
         elif self.source[self.position].isspace():
             self.position += 1
             Parser.tokenizer.select_next()
@@ -106,6 +121,7 @@ class Tokenizer:
 class Parser:
     '''
     Classe estática que analisa a estrutura da expressão e realiza operações.
+    Análise sintática do programa
 
     Métodos (em ordem de maior prioridade para menor):
      - parse_factor(): Calcula operações unárias + expressões entre aspas
@@ -183,7 +199,9 @@ class Parser:
 
     @staticmethod
     def run(code: str) -> Node:
-        # result = PrePro.filter(code)
+        '''
+        Monta a árvore binária (Abstract Syntax Tree)
+        '''
         Parser.tokenizer = Tokenizer(source=code)
         Parser.tokenizer.select_next()
         ast = Parser.parse_expression()
