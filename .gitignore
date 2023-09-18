@@ -1,6 +1,9 @@
 # Arquivos de teste
 test.py
 
+# Arquivo de compilação do vscode
+.vscode
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
