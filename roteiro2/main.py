@@ -1,5 +1,5 @@
 '''
-Roteiro 1 - Simple Calculator v1.0
+Roteiro 1 - Simple Calculator v1.1
 '''
 
 import typing
