@@ -36,7 +36,7 @@ DIGIT = 0 | 1 | ... | 9 ;
 ### Rodando o Programa
 
 ``` bash
-python main.py '1+1'
+python main.py entrada.go
 ```
 
 **Base de Testes**:
