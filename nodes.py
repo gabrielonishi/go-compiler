@@ -63,6 +63,8 @@ class IntVal(Node):
         return self.value
 
 
+class 
+
 class NoOp(Node):
     '''
     No Operation - Nó Dummy
@@ -70,4 +72,5 @@ class NoOp(Node):
     '''
 
     def evaluate(self):
-        return self.value
+        return None
+    

@@ -66,6 +66,7 @@ class Tokenizer:
     '''
 
     OPERATORS = ['-', '+', '*', '/', '(', ')']
+    RESERVED_KEYWORDS = ['println']
 
     def __init__(self, source: str) -> None:
         self.source = source
@@ -94,8 +95,6 @@ class Tokenizer:
                 self.next = Token(value='\n', type=TokenType.LINEFEED)
             elif self.source[self.position] == '=':
                 self.next = Token(value='=', type=TokenType.ATTRIBUTE)
-            elif self.source[self.position] == 'println':
-                self.next = Token(value='print', type=TokenType.PRINT)
             self.position += 1
         elif self.source[self.position].isdigit():
             this_value = ''
@@ -109,7 +108,11 @@ class Tokenizer:
                                                          self.source[self.position] == '_'):
                 this_identifier += self.source[self.position]
                 self.position += 1 
-            self.next = Token(value=this_identifier, type=TokenType.IDENTIFIER)
+            if(this_identifier in Tokenizer.RESERVED_KEYWORDS):
+                # Vai ter que mudar no futuro
+                self.next = Token(value='print', type=TokenType.PRINT)
+            else:
+                self.next = Token(value=this_identifier, type=TokenType.IDENTIFIER)
         elif self.source[self.position].isspace():
             self.position += 1
             Parser.tokenizer.select_next()
