@@ -105,7 +105,7 @@ class Tokenizer:
             self.next = Token(value=int(this_value), type=TokenType.INT)
         elif self.source[self.position].isalpha():
             this_identifier = ''
-            while self.position != len(self.source) and (self.source[self.position].isalpha() or
+            while self.position != len(self.source) and (self.source[self.position].isalnum() or
                                                          self.source[self.position] == '_'):
                 this_identifier += self.source[self.position]
                 self.position += 1 
