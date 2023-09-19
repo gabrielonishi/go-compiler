@@ -136,9 +136,9 @@ class Parser:
     @staticmethod
     def parse_block() -> nodes.Node:
         statements = list()
-        i = 0
         while (Parser.tokenizer.next.type != TokenType.EOF):
-            statements.append(Parser.parse_statement())
+            statement = Parser.parse_statement()
+            statements.append(statement)
         return nodes.Block(value=None, children=statements)
 
     @staticmethod
@@ -159,8 +159,6 @@ class Parser:
             else:
                 raise ValueError(
                     f'ERRO EM Parser.parse_statement: Identifier {identifier} não seguido de = na posição {Parser.tokenizer.position}')
-            # statement = nodes.Identifier(value=identifier, children=[])
-            # return statement
         elif Parser.tokenizer.next.type == TokenType.PRINT:
             Parser.tokenizer.select_next()
             if Parser.tokenizer.next.value == '(':
@@ -176,6 +174,8 @@ class Parser:
                     "ERRO EM parse_statement(): Não abriu parênteses para print")
             statement = nodes.Print(value=None, children=[expression])
             return(statement)
+        else:
+            raise ValueError(f'ERRO EM parse_statement(): Valor {Parser.tokenizer.next.value} não esperado na posição {Parser.tokenizer.position}')
 
     @staticmethod
     def parse_factor() -> nodes.Node:
