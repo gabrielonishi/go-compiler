@@ -21,6 +21,9 @@ class SymbolTable():
     def set(self, identifier, value):
         self.symbol_table[identifier] = value
 
+    def get_table(self):
+        return self.symbol_table
+
 
 class Node():
     '''
@@ -38,7 +41,7 @@ class Node():
         self.value = value
         self.children = children
 
-    def evaluate(symbol_table: SymbolTable):
+    def evaluate(self, symbol_table: SymbolTable):
         pass
 
 
@@ -51,13 +54,13 @@ class BinOp(Node):
 
     def evaluate(self, symbol_table: SymbolTable):
         if self.value == '+':
-            return self.children[0].evaluate() + self.children[1].evaluate()
+            return self.children[0].evaluate(symbol_table) + self.children[1].evaluate(symbol_table)
         elif self.value == '-':
-            return self.children[0].evaluate() - self.children[1].evaluate()
+            return self.children[0].evaluate(symbol_table) - self.children[1].evaluate(symbol_table)
         elif self.value == '*':
-            return self.children[0].evaluate() * self.children[1].evaluate()
+            return self.children[0].evaluate(symbol_table) * self.children[1].evaluate(symbol_table)
         elif self.value == '/':
-            return self.children[0].evaluate() // self.children[1].evaluate()
+            return self.children[0].evaluate(symbol_table) // self.children[1].evaluate(symbol_table)
 
 
 class UnOp(Node):
@@ -69,9 +72,9 @@ class UnOp(Node):
 
     def evaluate(self, symbol_table: SymbolTable):
         if self.value == '-':
-            return -self.children[0].evaluate()
+            return -self.children[0].evaluate(symbol_table)
         elif self.value == '+':
-            return self.children[0].evaluate()
+            return self.children[0].evaluate(symbol_table)
 
 
 class IntVal(Node):
@@ -115,7 +118,7 @@ class Print(Node):
     '''
 
     def evaluate(self, symbol_table: SymbolTable):
-        print(self.children[0].evaluate())
+        print(self.children[0].evaluate(symbol_table))
 
 
 class Block(Node):
@@ -126,20 +129,20 @@ class Block(Node):
     Não possui value
     '''
 
-    def evaluate(self):
+    def evaluate(self, symbol_table: SymbolTable):
         for child in self.children:
-            child.evaluate()
+            child.evaluate(symbol_table)
 
 
 class Assignment(Node):
     '''
     Representa variável
 
-    Possui 2 filhos:
+    Possui 2 filhos:F
      - children[0] -> identifier
      - children[1] -> ast
     '''
     def evaluate(self, symbol_table: SymbolTable):
-        variable = self.children[0].value()
-        ast_result = self.children[1]
+        variable = self.children[0].value
+        ast_result = self.children[1].evaluate(symbol_table)
         symbol_table.set(identifier=variable, value=ast_result)

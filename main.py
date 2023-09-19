@@ -21,9 +21,6 @@ class PrePro():
                 # espera dar source[i] == '*' and source[i+1] == '/'
                 while i < len(source) and source[i:i+1] == '*/':
                     i += 1
-            # elif source[i] != '\n':
-            #     clean_code += source[i]
-            # i += 1
             else:
                 clean_code += source[i]
             i+=1
@@ -77,9 +74,8 @@ class Tokenizer:
 
     def select_next(self) -> None:
         '''Lê o próximo token e atualiza o atributo next'''
-
         if len(self.source) == self.position:
-            self.next = Token(value='"', type=TokenType.EOF)
+            self.next = Token(value='EOF', type=TokenType.EOF)
         elif self.source[self.position] in Tokenizer.OPERATORS:
             if self.source[self.position] == '-':
                 self.next = Token(value='-', type=TokenType.MINUS)
@@ -140,7 +136,8 @@ class Parser:
     @staticmethod
     def parse_block() -> nodes.Node:
         statements = list()
-        while Parser.tokenizer.next.type != TokenType.EOF:
+        i = 0
+        while (Parser.tokenizer.next.type != TokenType.EOF):
             statements.append(Parser.parse_statement())
         return nodes.Block(value=None, children=statements)
 
@@ -151,29 +148,34 @@ class Parser:
             Parser.tokenizer.select_next()
             return statement
         elif Parser.tokenizer.next.type == TokenType.IDENTIFIER:
-            Parser.tokenizer.select_next()
-            identifier = Parser.tokenizer.next.value
+            variable = Parser.tokenizer.next.value
+            identifier = nodes.Identifier(value=variable, children=[])
             Parser.tokenizer.select_next()
             if Parser.tokenizer.next.type == TokenType.ATTRIBUTE:
                 Parser.tokenizer.select_next()
                 expression = Parser.parse_expression()
-                nodes.Assignment(value=None, children=[identifier, expression])
+                statement = nodes.Assignment(value=None, children=[identifier, expression])
+                return statement
             else:
                 raise ValueError(
                     f'ERRO EM Parser.parse_statement: Identifier {identifier} não seguido de = na posição {Parser.tokenizer.position}')
-            statement = nodes.Identifier(value=identifier, children=[])
-            return statement
+            # statement = nodes.Identifier(value=identifier, children=[])
+            # return statement
         elif Parser.tokenizer.next.type == TokenType.PRINT:
             Parser.tokenizer.select_next()
             if Parser.tokenizer.next.value == '(':
+                Parser.tokenizer.select_next()
                 expression = Parser.parse_expression()
-                if Parser.tokenizer.next.value != ')':
+                if Parser.tokenizer.next.value == ')':
+                    Parser.tokenizer.select_next()
+                else:
                     raise ValueError(
                         "ERRO EM parse_statement(): Não fechou parênteses para print")
             else:
                 raise ValueError(
                     "ERRO EM parse_statement(): Não abriu parênteses para print")
             statement = nodes.Print(value=None, children=[expression])
+            return(statement)
 
     @staticmethod
     def parse_factor() -> nodes.Node:
@@ -202,8 +204,8 @@ class Parser:
                 raise ValueError(
                     f'PARSE FACTOR ERROR: Problema de fechamento de aspas em {Parser.tokenizer.position}')
         elif Parser.tokenizer.next.type == TokenType.IDENTIFIER:
-            Parser.tokenizer.select_next() 
             variable = Parser.tokenizer.next.value
+            Parser.tokenizer.select_next() 
             factor = nodes.Identifier(value=variable, children=[])
             return factor
 
@@ -263,6 +265,7 @@ if __name__ == '__main__':
     with open(file=sys.argv[1], mode="r") as file:
         code = file.read()
     clean_code = PrePro.filter(source=code)
+    Parser.tokenizer = Tokenizer(clean_code)
     root = Parser.run(clean_code)
     symbol_table = nodes.SymbolTable()
-    print(root.evaluate(symbol_table=symbol_table))
+    root.evaluate(symbol_table=symbol_table)

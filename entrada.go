@@ -1,5 +1,4 @@
-// adsfadsf
 x = 3
-y = 2
+y = 5
 z = x + y
 Println(z)
