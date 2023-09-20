@@ -10,20 +10,36 @@ class PrePro():
     '''
 
     @staticmethod
-    def filter(source: str):
-        clean_code = ''
+    def clean_comments(source: str):
+        clean_raw = ''
         i = 0
         while i < len(source):
             if source[i:i+2] == '//':
-                while i < len(source) and source[i] != '\n':
+                while source[i] != '\n':
                     i += 1
             elif source[i:i+2] == '/*':
-                # espera dar source[i] == '*' and source[i+1] == '/'
-                while i < len(source) and source[i:i+1] == '*/':
+                while source[i:i+2] != '*/':
                     i += 1
+                # Tem que limpar * e /
+                i += 2
             else:
-                clean_code += source[i]
-            i += 1
+                clean_raw += source[i]
+                i += 1
+        return clean_raw
+
+    @staticmethod
+    def clean_breaks(clean_raw: str):
+        lines = clean_raw.splitlines()
+        clean_lines = [line.strip() for line in lines if line.strip()]
+        break_ends = [line + '\n' for line in clean_lines]
+        clean_code = ''.join(break_ends)
+        return clean_code
+
+    @staticmethod
+    def filter(source: str):
+
+        clean_raw = PrePro.clean_comments(source)
+        clean_code = PrePro.clean_breaks(clean_raw)
         return clean_code
 
 
@@ -44,11 +60,8 @@ class Parser:
 
     @staticmethod
     def parse_statement() -> nodes.Node:
-        if Parser.tokenizer.next.type == tokens.TokenType.LINEFEED:
-            statement = nodes.NoOp(value=None, children=[])
-            Parser.tokenizer.select_next()
-            return statement
-        elif Parser.tokenizer.next.type == tokens.TokenType.IDENTIFIER:
+
+        if Parser.tokenizer.next.type == tokens.TokenType.IDENTIFIER:
             variable = Parser.tokenizer.next.value
             identifier = nodes.Identifier(value=variable, children=[])
             Parser.tokenizer.select_next()
@@ -57,7 +70,6 @@ class Parser:
                 expression = Parser.parse_expression()
                 statement = nodes.Assignment(
                     value=None, children=[identifier, expression])
-                return statement
             else:
                 raise ValueError(
                     f'ERRO EM Parser.parse_statement: Identifier {identifier} não seguido de = na posição {Parser.tokenizer.position}')
@@ -75,10 +87,16 @@ class Parser:
                 raise ValueError(
                     "ERRO EM parse_statement(): Não abriu parênteses para print")
             statement = nodes.Print(value=None, children=[expression])
-            return (statement)
         else:
             raise ValueError(
-                f'ERRO EM parse_statement(): Valor {Parser.tokenizer.next.value} não esperado na posição {Parser.tokenizer.position}')
+                f'ERRO EM parse_statement(): Valor {Parser.tokenizer.next.value} não é nem Identifier nem Print')
+        if Parser.tokenizer.next.type == tokens.TokenType.LINEFEED:
+            Parser.tokenizer.select_next()
+        else:
+            raise ValueError(
+                f'ERRO EM parse_statement(): Valor {Parser.tokenizer.next.value} não esperado na posição {Parser.tokenizer.position}'
+            )
+        return statement
 
     @staticmethod
     def parse_expression():
