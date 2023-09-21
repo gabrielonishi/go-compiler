@@ -17,7 +17,7 @@
 
 ### Diagrama Sintático (v2.1)
 
-![Diagrama sintático](./diagrama-roteiro3.png)
+![Diagrama sintático](./diagrama5.drawio.png)
 
 ### EBNF
 
