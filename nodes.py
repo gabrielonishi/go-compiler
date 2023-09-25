@@ -192,10 +192,8 @@ class If(Node):
         condition = self.children[0]
         true_block = self.children[1]
         if condition.evaluate(symbol_table):
-            print(condition)
             true_block.evaluate(symbol_table)
         elif len(self.children) == 3:
-            print('entrou')
             else_block = self.children[2]
             else_block.evaluate(symbol_table)
     
@@ -207,6 +205,12 @@ class For(Node):
     Possui 4 filhos:
      - children[0] -> variável de iteração
      - children[1] -> condição
-     - children[2] -> s
-     - children[0]
+     - children[2] -> incremento
+     - children[3] -> bloco
     '''
+
+    def evaluate(self, symbol_table: SymbolTable):
+        self.children[0].evaluate(symbol_table)
+        while(self.children[1].evaluate(symbol_table)):
+            self.children[3].evaluate(symbol_table)
+            self.children[2].evaluate(symbol_table)

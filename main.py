@@ -39,7 +39,7 @@ class PrePro():
         clean_lines = [line.strip() for line in lines if line.strip()]
         break_ends = [line + '\n' for line in clean_lines]
         clean_code = ''.join(break_ends)
-        return clean_code[:-1]
+        return clean_code
 
     @staticmethod
     def filter(source: str) -> str:
@@ -94,7 +94,6 @@ class Parser:
     @staticmethod
     def parse_statement() -> nodes.Node:
 
-
         if Parser.tokenizer.next.type == tokens.TokenType.PRINT:
             Parser.tokenizer.select_next()
             if Parser.tokenizer.next.type == tokens.TokenType.OPEN_PARENTHESIS:
@@ -117,29 +116,13 @@ class Parser:
             if Parser.tokenizer.next.type == tokens.TokenType.ELSE:
                 Parser.tokenizer.select_next()
                 else_block = Parser.parse_block()
-                return nodes.If(value=None, children=[condition, if_block, else_block])
+                statement = nodes.If(value=None, children=[condition, if_block, else_block])
             else:
-                return nodes.If(value=None, children=[condition, if_block])
-
-        elif Parser.tokenizer.next.type == tokens.TokenType.IDENTIFIER:
-            variable = Parser.tokenizer.next.value
-            identifier = nodes.Identifier(value=variable, children=[])
-            Parser.tokenizer.select_next()
-            if Parser.tokenizer.next.type == tokens.TokenType.ATTRIBUTE:
-                Parser.tokenizer.select_next()
-                expression = Parser.parse_expression()
-                statement = nodes.Assignment(
-                    value=None, children=[identifier, expression])
-            else:
-                raise ValueError(
-                    f'ERRO EM Parser.parse_statement: Identifier {identifier} não seguido de = na posição {Parser.tokenizer.position}')
-
-        else:
-            Parser.tokenizer.select_next()
-            print(print(Parser.tokenizer.next.value))
-            raise ValueError(
-                f'ERRO EM parse_statement(): Valor {Parser.tokenizer.next.value} não é nem Identifier nem Print')
+                statement = nodes.If(value=None, children=[condition, if_block])
         
+        else:
+            statement = Parser.assign()
+ 
         if Parser.tokenizer.next.type == tokens.TokenType.LINEFEED:
             Parser.tokenizer.select_next()
         else:
@@ -233,7 +216,6 @@ class Parser:
             factor = Parser.parse_factor()
             node = nodes.UnOp('+', [factor])
             return node
-
         elif Parser.tokenizer.next.type == tokens.TokenType.NOT:
             Parser.tokenizer.select_next()
             factor = Parser.parse_factor()
@@ -253,16 +235,29 @@ class Parser:
             Parser.tokenizer.select_next()
             factor = nodes.Identifier(value=variable, children=[])
             return factor
+        elif Parser.tokenizer.next.type == tokens.TokenType.SCANLN:
+            Parser.tokenizer.select_next()
+            if(Parser.tokenizer.next.type != tokens.TokenType.OPEN_PARENTHESIS):
+                raise ValueError('ERRO EM Parser.parse_factor: Não abriu parênteses depois de Scanln')
+            Parser.tokenizer.select_next()
+            if(Parser.tokenizer.next.type != tokens.TokenType.CLOSE_PARENTHESIS):
+                raise ValueError('ERRO EM Parser.parse_factor: Não fechou parênteses após Scanln')
+            Parser.tokenizer.select_next()
+            node = nodes.Scanln(value=None, children=[])
+            return node
+            
     
     @staticmethod
     def assign() -> nodes.Node:
+
         if Parser.tokenizer.next.type == tokens.TokenType.IDENTIFIER:
-            identifier = Parser.tokenizer.next.value
+            variable = Parser.tokenizer.next.value
+            identifier = nodes.Identifier(value=variable, children=[])
             Parser.tokenizer.select_next()
-            if Parser.tokenizer.next.type == tokens.TokenType.EQUALITY:
+            if Parser.tokenizer.next.type == tokens.TokenType.ATTRIBUTE:
                 Parser.tokenizer.select_next()
                 bool_expression = Parser.parse_bool_expression()
-                nodes.Assignment(value=None, children=[identifier, bool_expression])
+                return nodes.Assignment(value=None, children=[identifier, bool_expression])
             else:
                 raise ValueError('ERRO EM Parser.assign(): Não passou um operador "="')
         else:

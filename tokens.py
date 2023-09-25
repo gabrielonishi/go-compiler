@@ -46,10 +46,7 @@ class Tokenizer:
     '''
     Transforma uma sequência de caracteres em tokens
     Análise léxica do programa
-
-    Métodos:
-    __init__(source): Inicializa o tokenizer a partir de uma expressão
-    select_next(): Devolve o próximo token da expressão, alterando a posição de análise
+Println(x)en da expressão, alterando a posição de análise
     '''
 
     OPERATORS = ['-', '+', '*', '/', '(', ')', '=', '\n', '&', '|', '>', '<', '!', '{', '}']
