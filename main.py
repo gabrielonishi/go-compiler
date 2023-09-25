@@ -10,7 +10,10 @@ class PrePro():
     '''
 
     @staticmethod
-    def clean_comments(source: str):
+    def clean_comments(source: str) -> str:
+        '''
+        Remove comentários multiline e inline
+        '''
         clean_raw = ''
         i = 0
         while i < len(source):
@@ -28,7 +31,10 @@ class PrePro():
         return clean_raw
 
     @staticmethod
-    def clean_breaks(clean_raw: str):
+    def clean_breaks(clean_raw: str) -> str:
+        '''
+        Remove quebras de linha sem código e garante '\n' no final das linhas de código
+        '''
         lines = clean_raw.splitlines()
         clean_lines = [line.strip() for line in lines if line.strip()]
         break_ends = [line + '\n' for line in clean_lines]
@@ -36,7 +42,10 @@ class PrePro():
         return clean_code
 
     @staticmethod
-    def filter(source: str):
+    def filter(source: str) -> str:
+        '''
+        Filtra comentários e garante formatação
+        '''
 
         clean_raw = PrePro.clean_comments(source)
         clean_code = PrePro.clean_breaks(clean_raw)
@@ -49,6 +58,8 @@ class Parser:
     Análise sintática do programa
     '''
     tokenizer = None
+    
+    
 
     @staticmethod
     def parse_block() -> nodes.Node:
@@ -99,11 +110,47 @@ class Parser:
         return statement
 
     @staticmethod
-    def parse_expression():
-        '''
-        Consome tokens calculando termo de adição/subtração
-        '''
+    def parse_bool_expression() -> nodes.Node:
+        bool_term = Parser.parse_bool_term()
 
+        while Parser.tokenizer.next.type == tokens.TokenType.OR:
+            Parser.tokenizer.select_next()
+            other_bool_term = Parser.parse_relation_expression()
+            bool_expression = nodes.BinOp(value='||', children=[bool_term, other_bool_term])
+        
+        return bool_expression
+
+    @staticmethod
+    def parse_bool_term() -> nodes.Node:
+        relation_expression = Parser.parse_relation_expression
+        while Parser.tokenizer.next.type == tokens.TokenType.AND:
+            Parser.tokenizer.select_next()
+            other_relation_expression = Parser.parse_relation_expression()
+            bool_term = nodes.BinOp(value='&&', children=[relation_expression, other_relation_expression])
+        return bool_term
+
+    @staticmethod
+    def parse_relation_expression() -> nodes.Node:
+        expression = Parser.parse_expression()
+        
+        POSSIBLE_OPERATIONS = [tokens.TokenType.EQUALITY, tokens.TokenType.GREATERTHAN, tokens.TokenType.LESSERTHAN]
+        while Parser.tokenizer.next.type in POSSIBLE_OPERATIONS:
+            if Parser.tokenizer.next.type == tokens.TokenType.EQUALITY:
+                Parser.tokenizer.select_next()
+                other_expression = Parser.parse_expression()
+                relation_expression = nodes.BinOp(value='==', children=[expression, other_expression])
+            elif Parser.tokenizer.next.type == tokens.TokenType.GREATERTHAN:
+                Parser.tokenizer.select_next()
+                other_expression = Parser.parse_expression()
+                relation_expression = nodes.BinOp(value='>', children=[expression, other_expression])
+            elif Parser.tokenizer.next.type == tokens.TokenType.LESSERTHAN:
+                Parser.tokenizer.select_next()
+                other_expression = Parser.parse_expression()
+                relation_expression = nodes.BinOp(value='<', children=[expression, other_expression])
+        return relation_expression
+
+    @staticmethod
+    def parse_expression():
         term = Parser.parse_term()
         while Parser.tokenizer.next.value == '-' or Parser.tokenizer.next.value == '+':
             if Parser.tokenizer.next.value == '-':
@@ -114,17 +161,11 @@ class Parser:
                 Parser.tokenizer.select_next()
                 children = Parser.parse_term()
                 term = nodes.BinOp(value='+', children=[term, children])
-
         return term
 
     @staticmethod
     def parse_term() -> nodes.Node:
-        '''
-        Consome tokens calculando termo de multiplicação/divisão
-        '''
-
         factor = Parser.parse_factor()
-
         while Parser.tokenizer.next.value == '*' or Parser.tokenizer.next.value == '/':
             if Parser.tokenizer.next.value == '*':
                 Parser.tokenizer.select_next()
@@ -134,7 +175,6 @@ class Parser:
                 Parser.tokenizer.select_next()
                 children = Parser.parse_factor()
                 factor = nodes.BinOp(value='/', children=[factor, children])
-
         return factor
 
     @staticmethod
@@ -154,9 +194,14 @@ class Parser:
             factor = Parser.parse_factor()
             node = nodes.UnOp('+', [factor])
             return node
+        elif Parser.tokenizer.next.type == tokens.TokenType.NOT:
+            Parser.tokenizer.select_next()
+            factor = Parser.parse_factor()
+            node = nodes.UnOp('!', children=[factor])
+            return node
         elif Parser.tokenizer.next.value == '(':
             Parser.tokenizer.select_next()
-            expression = Parser.parse_expression()
+            expression = Parser.parse_bool_expression()
             if Parser.tokenizer.next.value == ')':
                 Parser.tokenizer.select_next()
                 return expression

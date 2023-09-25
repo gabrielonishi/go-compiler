@@ -12,11 +12,19 @@ class TokenType(Enum):
     MINUS = auto()
     MULT = auto()
     DIV = auto()
-    BRACKET = auto()
+    PARENTHESIS = auto()
     LINEFEED = auto()
     ATTRIBUTE = auto()
     PRINT = auto()
     IDENTIFIER = auto()
+    GREATERTHAN = auto()
+    LESSERTHAN = auto()
+    NOT = auto()
+    OR = auto()
+    AND = auto()
+    EQUALITY = auto()
+    BRACKET = auto()
+    SCANLN = auto()
 
 
 class Token:
@@ -39,8 +47,8 @@ class Tokenizer:
     select_next(): Devolve o próximo token da expressão, alterando a posição de análise
     '''
 
-    OPERATORS = ['-', '+', '*', '/', '(', ')', '=', '\n']
-    RESERVED_KEYWORDS = ['Println']
+    OPERATORS = ['-', '+', '*', '/', '(', ')', '=', '\n', '&', '|', '>', '<', '!', '{', '}']
+    RESERVED_KEYWORDS = ['Println', 'Scanln']
 
     def __init__(self, source: str) -> None:
         self.source = source
@@ -61,13 +69,39 @@ class Tokenizer:
             elif self.source[self.position] == '/':
                 self.next = Token(value='/', type=TokenType.DIV)
             elif self.source[self.position] == '(':
-                self.next = Token(value='(', type=TokenType.BRACKET)
+                self.next = Token(value='(', type=TokenType.PARENTHESIS)
             elif self.source[self.position] == ')':
-                self.next = Token(value=')', type=TokenType.BRACKET)
+                self.next = Token(value=')', type=TokenType.PARENTHESIS)
             elif self.source[self.position] == '\n':
                 self.next = Token(value='\n', type=TokenType.LINEFEED)
+            elif self.source[self.position] == '>':
+                self.next = Token(value='>', type=TokenType.GREATERTHAN)
+            elif self.source[self.position] == '<':
+                self.next = Token(value='<', type=TokenType.LESSERTHAN)
+            elif self.source[self.position] == '!':
+                self.next = Token(value='!', type=TokenType.NOT)
+            elif self.source[self.position] == '{':
+                self.next = Token(value='{', type=TokenType.PARENTHESIS)
+            elif self.source[self.position] == '}':
+                self.next = Token(value='}', type=TokenType.PARENTHESIS)
             elif self.source[self.position] == '=':
-                self.next = Token(value='=', type=TokenType.ATTRIBUTE)
+                if self.source[self.position + 1] == '=':
+                    self.next = Token(value='==', type=TokenType.EQUALITY)
+                    self.position+=1
+                else:
+                    self.next = Token(value='=', type=TokenType.ATTRIBUTE)
+            elif self.source[self.position] == '&':
+                if self.source[self.position + 1] == '&':
+                    self.next = Token(value='&&', type = TokenType.AND)
+                    self.position+=1
+                else:
+                    raise ValueError("ERRO EM Tokenizer.select_next(): '&' não é um operador válido. Você quis dizer '&&'?")
+            elif self.source[self.position] == '|':
+                if self.source[self.position + 1] == '|':
+                    self.next = Token(value='||', type = TokenType.OR)
+                    self.position+=1
+                else:
+                    raise ValueError("ERRO EM Tokenizer.select_next(): '|' não é um operador válido. Você quis dizer '||'?")
             self.position += 1
         elif self.source[self.position].isdigit():
             this_value = ''
@@ -82,8 +116,10 @@ class Tokenizer:
                 this_identifier += self.source[self.position]
                 self.position += 1
             if (this_identifier in Tokenizer.RESERVED_KEYWORDS):
-                # Vai ter que mudar no futuro
-                self.next = Token(value='Println', type=TokenType.PRINT)
+                if this_identifier == 'Println':
+                    self.next = Token(value='Println', type=TokenType.PRINT)
+                elif this_identifier == 'Scanln':
+                    self.next = Token(value='Scanln', type=TokenType.SCANLN)
             else:
                 self.next = Token(value=this_identifier,
                                   type=TokenType.IDENTIFIER)
