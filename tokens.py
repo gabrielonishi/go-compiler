@@ -12,7 +12,10 @@ class TokenType(Enum):
     MINUS = auto()
     MULT = auto()
     DIV = auto()
-    PARENTHESIS = auto()
+    OPEN_PARENTHESIS = auto()
+    CLOSE_PARENTHESIS = auto()
+    OPEN_BRACKET = auto()
+    CLOSE_BRACKET = auto()
     LINEFEED = auto()
     ATTRIBUTE = auto()
     PRINT = auto()
@@ -23,8 +26,10 @@ class TokenType(Enum):
     OR = auto()
     AND = auto()
     EQUALITY = auto()
-    BRACKET = auto()
     SCANLN = auto()
+    IF = auto()
+    FOR = auto()
+    ELSE = auto()
 
 
 class Token:
@@ -48,7 +53,7 @@ class Tokenizer:
     '''
 
     OPERATORS = ['-', '+', '*', '/', '(', ')', '=', '\n', '&', '|', '>', '<', '!', '{', '}']
-    RESERVED_KEYWORDS = ['Println', 'Scanln']
+    RESERVED_KEYWORDS = ['Println', 'Scanln', 'if', 'else', 'for']
 
     def __init__(self, source: str) -> None:
         self.source = source
@@ -69,9 +74,9 @@ class Tokenizer:
             elif self.source[self.position] == '/':
                 self.next = Token(value='/', type=TokenType.DIV)
             elif self.source[self.position] == '(':
-                self.next = Token(value='(', type=TokenType.PARENTHESIS)
+                self.next = Token(value='(', type=TokenType.OPEN_PARENTHESIS)
             elif self.source[self.position] == ')':
-                self.next = Token(value=')', type=TokenType.PARENTHESIS)
+                self.next = Token(value=')', type=TokenType.CLOSE_PARENTHESIS)
             elif self.source[self.position] == '\n':
                 self.next = Token(value='\n', type=TokenType.LINEFEED)
             elif self.source[self.position] == '>':
@@ -81,9 +86,9 @@ class Tokenizer:
             elif self.source[self.position] == '!':
                 self.next = Token(value='!', type=TokenType.NOT)
             elif self.source[self.position] == '{':
-                self.next = Token(value='{', type=TokenType.PARENTHESIS)
+                self.next = Token(value='{', type=TokenType.OPEN_BRACKET)
             elif self.source[self.position] == '}':
-                self.next = Token(value='}', type=TokenType.PARENTHESIS)
+                self.next = Token(value='}', type=TokenType.CLOSE_BRACKET)
             elif self.source[self.position] == '=':
                 if self.source[self.position + 1] == '=':
                     self.next = Token(value='==', type=TokenType.EQUALITY)
@@ -120,6 +125,12 @@ class Tokenizer:
                     self.next = Token(value='Println', type=TokenType.PRINT)
                 elif this_identifier == 'Scanln':
                     self.next = Token(value='Scanln', type=TokenType.SCANLN)
+                elif this_identifier == 'if':
+                    self.next = Token(value='if', type=TokenType.IF)
+                elif this_identifier == 'for':
+                    self.next = Token(value='for', type =TokenType.FOR)
+                elif this_identifier == 'else':
+                    self.next = Token(value='else', type=TokenType.ELSE)
             else:
                 self.next = Token(value=this_identifier,
                                   type=TokenType.IDENTIFIER)

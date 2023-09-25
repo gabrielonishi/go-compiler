@@ -191,11 +191,13 @@ class If(Node):
     def evaluate(self, symbol_table: SymbolTable):
         condition = self.children[0]
         true_block = self.children[1]
-        if condition:
-            true_block.evaluate()
+        if condition.evaluate(symbol_table):
+            print(condition)
+            true_block.evaluate(symbol_table)
         elif len(self.children) == 3:
+            print('entrou')
             else_block = self.children[2]
-            else_block.evaluate()
+            else_block.evaluate(symbol_table)
     
 
 class For(Node):
