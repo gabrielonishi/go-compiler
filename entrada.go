@@ -1,3 +1,3 @@
 
 
-Println(1 == 1)
+Println(1)

@@ -88,7 +88,9 @@ class Parser:
             Parser.tokenizer.select_next()
             if Parser.tokenizer.next.value == '(':
                 Parser.tokenizer.select_next()
-                expression = Parser.parse_expression()
+                expression = Parser.parse_bool_expression()
+                print(expression)
+                print(Parser.tokenizer.next.value)
                 if Parser.tokenizer.next.value == ')':
                     Parser.tokenizer.select_next()
                 else:
@@ -111,42 +113,42 @@ class Parser:
 
     @staticmethod
     def parse_bool_expression() -> nodes.Node:
-        bool_term = Parser.parse_bool_term()
+        bool_expression = Parser.parse_bool_term()
 
         while Parser.tokenizer.next.type == tokens.TokenType.OR:
             Parser.tokenizer.select_next()
             other_bool_term = Parser.parse_relation_expression()
-            bool_expression = nodes.BinOp(value='||', children=[bool_term, other_bool_term])
+            bool_expression = nodes.BinOp(value='||', children=[bool_expression, other_bool_term])
         
         return bool_expression
 
     @staticmethod
     def parse_bool_term() -> nodes.Node:
-        relation_expression = Parser.parse_relation_expression
+        bool_term = Parser.parse_relation_expression()
         while Parser.tokenizer.next.type == tokens.TokenType.AND:
             Parser.tokenizer.select_next()
             other_relation_expression = Parser.parse_relation_expression()
-            bool_term = nodes.BinOp(value='&&', children=[relation_expression, other_relation_expression])
+            bool_term = nodes.BinOp(value='&&', children=[bool_term, other_relation_expression])
         return bool_term
 
     @staticmethod
     def parse_relation_expression() -> nodes.Node:
-        expression = Parser.parse_expression()
+        relation_expression = Parser.parse_expression()
         
         POSSIBLE_OPERATIONS = [tokens.TokenType.EQUALITY, tokens.TokenType.GREATERTHAN, tokens.TokenType.LESSERTHAN]
         while Parser.tokenizer.next.type in POSSIBLE_OPERATIONS:
             if Parser.tokenizer.next.type == tokens.TokenType.EQUALITY:
                 Parser.tokenizer.select_next()
                 other_expression = Parser.parse_expression()
-                relation_expression = nodes.BinOp(value='==', children=[expression, other_expression])
+                relation_expression = nodes.BinOp(value='==', children=[relation_expression, other_expression])
             elif Parser.tokenizer.next.type == tokens.TokenType.GREATERTHAN:
                 Parser.tokenizer.select_next()
                 other_expression = Parser.parse_expression()
-                relation_expression = nodes.BinOp(value='>', children=[expression, other_expression])
+                relation_expression = nodes.BinOp(value='>', children=[relation_expression, other_expression])
             elif Parser.tokenizer.next.type == tokens.TokenType.LESSERTHAN:
                 Parser.tokenizer.select_next()
                 other_expression = Parser.parse_expression()
-                relation_expression = nodes.BinOp(value='<', children=[expression, other_expression])
+                relation_expression = nodes.BinOp(value='<', children=[relation_expression, other_expression])
         return relation_expression
 
     @staticmethod
@@ -231,7 +233,19 @@ if __name__ == '__main__':
     with open(file=sys.argv[1], mode="r") as file:
         code = file.read()
     clean_code = PrePro.filter(source=code)
-    Parser.tokenizer = tokens.Tokenizer(clean_code)
+    # Parser.tokenizer = tokens.Tokenizer(clean_code)
+    # Parser.tokenizer.select_next()
+    # print(Parser.tokenizer.next.value, Parser.tokenizer.next.type)
+    # Parser.tokenizer.select_next()
+    # print(Parser.tokenizer.next.value, Parser.tokenizer.next.type)
+    # Parser.tokenizer.select_next()
+    # print(Parser.tokenizer.next.value, Parser.tokenizer.next.type)
+    # Parser.tokenizer.select_next()
+    # print(Parser.tokenizer.next.value, Parser.tokenizer.next.type)
+    # Parser.tokenizer.select_next()
+    # print(Parser.tokenizer.next.value, Parser.tokenizer.next.type)
+    # Parser.tokenizer.select_next()
+    # print(Parser.tokenizer.next.value, Parser.tokenizer.next.type)
     root = Parser.run(clean_code)
     symbol_table = nodes.SymbolTable()
     root.evaluate(symbol_table=symbol_table)
