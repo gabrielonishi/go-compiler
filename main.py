@@ -73,7 +73,7 @@ class Parser:
             raise ValueError(
                 "ERRO EM Parser.parse_block(): É necessário começar um novo bloco com '{'")
         Parser.tokenizer.select_next()
-        if Parser.tokenizer.next.type == tokens.TokenType.LINEFEED:
+        if Parser.tokenizer.next.type != tokens.TokenType.LINEFEED:
             raise ValueError(
                 "ERRO EM Parser.parse_block(): É necessário um linebreak depois de '{'")
         Parser.tokenizer.select_next()
