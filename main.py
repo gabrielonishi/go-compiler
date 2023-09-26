@@ -58,73 +58,72 @@ class Parser:
     Análise sintática do programa
     '''
     tokenizer = None
-    
+
     @staticmethod
     def parse_program() -> nodes.Node:
         statements = list()
-        while(Parser.tokenizer.next.type != tokens.TokenType.EOF):
+        while (Parser.tokenizer.next.type != tokens.TokenType.EOF):
             statement = Parser.parse_statement()
             statements.append(statement)
         return nodes.Program(value=None, children=statements)
-            
 
     @staticmethod
     def parse_block() -> nodes.Node:
-        if Parser.tokenizer.next.type == tokens.TokenType.OPEN_BRACKET:
-            Parser.tokenizer.select_next()
-            if Parser.tokenizer.next.type == tokens.TokenType.LINEFEED:
-                Parser.tokenizer.select_next()
-                block = nodes.Block(value=None, children=[])
-                statements = list()
-                while (Parser.tokenizer.next.type != tokens.TokenType.CLOSE_BRACKET):
-                    statement = Parser.parse_statement()
-                    statements.append(statement)
-                block = nodes.Block(value=None, children=statements)
-                
-                if Parser.tokenizer.next.type == tokens.TokenType.CLOSE_BRACKET:
-                    Parser.tokenizer.select_next()
-                    return block
-                else:
-                    raise ValueError("ERRO EM Parser.parse_block(): Não fechou bloco com '}'")
-            else:
-                raise ValueError("ERRO EM Parser.parse_block(): É necessário um linebreak depois de '{'")
-        else:
-            raise ValueError("ERRO EM Parser.parse_block(): É necessário começar um novo bloco com '{'")
+        if Parser.tokenizer.next.type != tokens.TokenType.OPEN_BRACKET:
+            raise ValueError(
+                "ERRO EM Parser.parse_block(): É necessário começar um novo bloco com '{'")
+        Parser.tokenizer.select_next()
+        if Parser.tokenizer.next.type == tokens.TokenType.LINEFEED:
+            raise ValueError(
+                "ERRO EM Parser.parse_block(): É necessário um linebreak depois de '{'")
+        Parser.tokenizer.select_next()
+        block = nodes.Block(value=None, children=[])
+        statements = list()
+        while (Parser.tokenizer.next.type != tokens.TokenType.CLOSE_BRACKET):
+            statement = Parser.parse_statement()
+            statements.append(statement)
+        block = nodes.Block(value=None, children=statements)
+        if Parser.tokenizer.next.type != tokens.TokenType.CLOSE_BRACKET:
+            raise ValueError(
+                "ERRO EM Parser.parse_block(): Não fechou bloco com '}'")
+        Parser.tokenizer.select_next()
+        return block
 
     @staticmethod
     def parse_statement() -> nodes.Node:
 
         if Parser.tokenizer.next.type == tokens.TokenType.PRINT:
             Parser.tokenizer.select_next()
-            if Parser.tokenizer.next.type == tokens.TokenType.OPEN_PARENTHESIS:
-                Parser.tokenizer.select_next()
-                expression = Parser.parse_bool_expression()
-                if Parser.tokenizer.next.type == tokens.TokenType.CLOSE_PARENTHESIS:
-                    Parser.tokenizer.select_next()
-                else:
-                    raise ValueError(
-                        "ERRO EM parse_statement(): Não fechou parênteses para print")
-            else:
+            if Parser.tokenizer.next.type != tokens.TokenType.OPEN_PARENTHESIS:
                 raise ValueError(
                     "ERRO EM parse_statement(): Não abriu parênteses para print")
+            Parser.tokenizer.select_next()
+            expression = Parser.parse_bool_expression()
+            if Parser.tokenizer.next.type != tokens.TokenType.CLOSE_PARENTHESIS:
+                raise ValueError(
+                    "ERRO EM parse_statement(): Não fechou parênteses para print")
+            Parser.tokenizer.select_next()
             statement = nodes.Print(value=None, children=[expression])
-        
-        elif(Parser.tokenizer.next.type == tokens.TokenType.IF):
+
+        elif (Parser.tokenizer.next.type == tokens.TokenType.IF):
             Parser.tokenizer.select_next()
             condition = Parser.parse_bool_expression()
             if_block = Parser.parse_block()
             if Parser.tokenizer.next.type == tokens.TokenType.ELSE:
                 Parser.tokenizer.select_next()
                 else_block = Parser.parse_block()
-                statement = nodes.If(value=None, children=[condition, if_block, else_block])
+                statement = nodes.If(value=None, children=[
+                                     condition, if_block, else_block])
             else:
-                statement = nodes.If(value=None, children=[condition, if_block])
-            
-        elif(Parser.tokenizer.next.type == tokens.TokenType.FOR):
+                statement = nodes.If(value=None, children=[
+                                     condition, if_block])
+
+        elif (Parser.tokenizer.next.type == tokens.TokenType.FOR):
             Parser.tokenizer.select_next()
             iteration_variable = Parser.assign()
             if Parser.tokenizer.next.type != tokens.TokenType.COLON:
-                raise ValueError("Esperava-se ';' após inicialização de variável do loop for")
+                raise ValueError(
+                    "Esperava-se ';' após inicialização de variável do loop for")
             Parser.tokenizer.select_next()
             condition = Parser.parse_bool_expression()
             if Parser.tokenizer.next.type != tokens.TokenType.COLON:
@@ -132,10 +131,11 @@ class Parser:
             Parser.tokenizer.select_next()
             increment = Parser.assign()
             for_loop = Parser.parse_block()
-            statement = nodes.For(value=None, children=[iteration_variable, condition, increment, for_loop])
+            statement = nodes.For(value=None, children=[
+                                  iteration_variable, condition, increment, for_loop])
         else:
             statement = Parser.assign()
- 
+
         if Parser.tokenizer.next.type == tokens.TokenType.LINEFEED:
             Parser.tokenizer.select_next()
         else:
@@ -152,8 +152,10 @@ class Parser:
             Parser.tokenizer.select_next()
             other_bool_term = Parser.parse_relation_expression()
             if other_bool_term is None:
-                raise ValueError('ERRO EM parse_bool_expression: É preciso uma ou mais expressões para fazer uma comparação!')
-            bool_expression = nodes.BinOp(value='||', children=[bool_expression, other_bool_term])
+                raise ValueError(
+                    'ERRO EM parse_bool_expression: É preciso uma ou mais expressões para fazer uma comparação!')
+            bool_expression = nodes.BinOp(
+                value='||', children=[bool_expression, other_bool_term])
         return bool_expression
 
     @staticmethod
@@ -163,28 +165,34 @@ class Parser:
             Parser.tokenizer.select_next()
             other_relation_expression = Parser.parse_relation_expression()
             if other_relation_expression is None:
-                raise ValueError('ERRO EM parse_bool_expression: É preciso uma ou mais expressões para fazer uma comparação!')
-            bool_term = nodes.BinOp(value='&&', children=[bool_term, other_relation_expression])
+                raise ValueError(
+                    'ERRO EM parse_bool_expression: É preciso uma ou mais expressões para fazer uma comparação!')
+            bool_term = nodes.BinOp(value='&&', children=[
+                                    bool_term, other_relation_expression])
         return bool_term
 
     @staticmethod
     def parse_relation_expression() -> nodes.Node:
         relation_expression = Parser.parse_expression()
-        
-        POSSIBLE_OPERATIONS = [tokens.TokenType.EQUALITY, tokens.TokenType.GREATERTHAN, tokens.TokenType.LESSERTHAN]
+
+        POSSIBLE_OPERATIONS = [tokens.TokenType.EQUALITY,
+                               tokens.TokenType.GREATERTHAN, tokens.TokenType.LESSERTHAN]
         while Parser.tokenizer.next.type in POSSIBLE_OPERATIONS:
             if Parser.tokenizer.next.type == tokens.TokenType.EQUALITY:
                 Parser.tokenizer.select_next()
                 other_expression = Parser.parse_expression()
-                relation_expression = nodes.BinOp(value='==', children=[relation_expression, other_expression])
+                relation_expression = nodes.BinOp(
+                    value='==', children=[relation_expression, other_expression])
             elif Parser.tokenizer.next.type == tokens.TokenType.GREATERTHAN:
                 Parser.tokenizer.select_next()
                 other_expression = Parser.parse_expression()
-                relation_expression = nodes.BinOp(value='>', children=[relation_expression, other_expression])
+                relation_expression = nodes.BinOp(
+                    value='>', children=[relation_expression, other_expression])
             elif Parser.tokenizer.next.type == tokens.TokenType.LESSERTHAN:
                 Parser.tokenizer.select_next()
                 other_expression = Parser.parse_expression()
-                relation_expression = nodes.BinOp(value='<', children=[relation_expression, other_expression])
+                relation_expression = nodes.BinOp(
+                    value='<', children=[relation_expression, other_expression])
         return relation_expression
 
     @staticmethod
@@ -253,16 +261,17 @@ class Parser:
             return factor
         elif Parser.tokenizer.next.type == tokens.TokenType.SCANLN:
             Parser.tokenizer.select_next()
-            if(Parser.tokenizer.next.type != tokens.TokenType.OPEN_PARENTHESIS):
-                raise ValueError('ERRO EM Parser.parse_factor: Não abriu parênteses depois de Scanln')
+            if (Parser.tokenizer.next.type != tokens.TokenType.OPEN_PARENTHESIS):
+                raise ValueError(
+                    'ERRO EM Parser.parse_factor: Não abriu parênteses depois de Scanln')
             Parser.tokenizer.select_next()
-            if(Parser.tokenizer.next.type != tokens.TokenType.CLOSE_PARENTHESIS):
-                raise ValueError('ERRO EM Parser.parse_factor: Não fechou parênteses após Scanln')
+            if (Parser.tokenizer.next.type != tokens.TokenType.CLOSE_PARENTHESIS):
+                raise ValueError(
+                    'ERRO EM Parser.parse_factor: Não fechou parênteses após Scanln')
             Parser.tokenizer.select_next()
             node = nodes.Scanln(value=None, children=[])
             return node
-            
-    
+
     @staticmethod
     def assign() -> nodes.Node:
         if Parser.tokenizer.next.type == tokens.TokenType.IDENTIFIER:
@@ -274,10 +283,12 @@ class Parser:
                 bool_expression = Parser.parse_bool_expression()
                 return nodes.Assignment(value=None, children=[identifier, bool_expression])
             else:
-                raise ValueError('ERRO EM Parser.assign(): Não passou um operador "="')
+                raise ValueError(
+                    'ERRO EM Parser.assign(): Não passou um operador "="')
         else:
-            raise ValueError('ERRO EM Parser.assign(): Próximo token deveria ser um identifier, mas não é')
-        
+            raise ValueError(
+                'ERRO EM Parser.assign(): Próximo token deveria ser um identifier, mas não é')
+
     @staticmethod
     def run(code: str) -> nodes.Node:
         '''
@@ -295,19 +306,6 @@ if __name__ == '__main__':
     with open(file=sys.argv[1], mode="r") as file:
         code = file.read()
     clean_code = PrePro.filter(source=code)
-    # Parser.tokenizer = tokens.Tokenizer(clean_code)
-    # Parser.tokenizer.select_next()
-    # print(Parser.tokenizer.next.value, Parser.tokenizer.next.type)
-    # Parser.tokenizer.select_next()
-    # print(Parser.tokenizer.next.value, Parser.tokenizer.next.type)
-    # Parser.tokenizer.select_next()
-    # print(Parser.tokenizer.next.value, Parser.tokenizer.next.type)
-    # Parser.tokenizer.select_next()
-    # print(Parser.tokenizer.next.value, Parser.tokenizer.next.type)
-    # Parser.tokenizer.select_next()
-    # print(Parser.tokenizer.next.value, Parser.tokenizer.next.type)
-    # Parser.tokenizer.select_next()
-    # print(Parser.tokenizer.next.value, Parser.tokenizer.next.type)
     root = Parser.run(clean_code)
     symbol_table = nodes.SymbolTable()
     root.evaluate(symbol_table=symbol_table)
