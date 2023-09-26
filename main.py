@@ -274,20 +274,19 @@ class Parser:
 
     @staticmethod
     def assign() -> nodes.Node:
-        if Parser.tokenizer.next.type == tokens.TokenType.IDENTIFIER:
-            variable = Parser.tokenizer.next.value
-            identifier = nodes.Identifier(value=variable, children=[])
-            Parser.tokenizer.select_next()
-            if Parser.tokenizer.next.type == tokens.TokenType.ATTRIBUTE:
-                Parser.tokenizer.select_next()
-                bool_expression = Parser.parse_bool_expression()
-                return nodes.Assignment(value=None, children=[identifier, bool_expression])
-            else:
-                raise ValueError(
-                    'ERRO EM Parser.assign(): Não passou um operador "="')
-        else:
+
+        if Parser.tokenizer.next.type != tokens.TokenType.IDENTIFIER:
             raise ValueError(
                 'ERRO EM Parser.assign(): Próximo token deveria ser um identifier, mas não é')
+        variable = Parser.tokenizer.next.value
+        identifier = nodes.Identifier(value=variable, children=[])
+        Parser.tokenizer.select_next()
+        if Parser.tokenizer.next.type != tokens.TokenType.ATTRIBUTE:
+            raise ValueError(
+                'ERRO EM Parser.assign(): Não passou um operador "="')
+        Parser.tokenizer.select_next()
+        bool_expression = Parser.parse_bool_expression()
+        return nodes.Assignment(value=None, children=[identifier, bool_expression])
 
     @staticmethod
     def run(code: str) -> nodes.Node:

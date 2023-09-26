@@ -1,12 +1,12 @@
 # Go Compiler
 
-Projeto individual de um compilador para a disciplina Lógica da Computação, do 7° semestre de engenharia de computação.
+Projeto individual de um compilador para a disciplina Lógica da Computação, do 7° semestre de engenharia de computação. C
 
 ![git status](http://3.129.230.99/svg/gabrielonishi/go-compiler/)
 
-### Diagrama Sintático (v2.1)
+### Diagrama Sintático (v2.2)
 
-![Diagrama sintático](./diagrama5.drawio.png)
+![Diagrama sintático](./diagrama6.drawio.png)
 
 ### Para rodar o programa
 ```shell
@@ -27,19 +27,5 @@ IDENTIFIER = LETTER, { LETTER | DIGIT | "_" } ;
 NUMBER = DIGIT, { DIGIT } ;
 LETTER = ( a | ... | z | A | ... | Z ) ;
 DIGIT = ( 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 ) ;
-```
-
-### Operando com tags
-
-Para criar uma nova tag:
-
-```bash
-git tag -a v0.1.1 -m "Mensagem sobre o release"
-git push origin v0.1.1
-```
-
-Para selecionar a versão (note que não é um branch):
-```bash
-git checkout v0.1.1
 ```
 
