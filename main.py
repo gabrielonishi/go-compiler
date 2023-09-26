@@ -151,8 +151,9 @@ class Parser:
         while Parser.tokenizer.next.type == tokens.TokenType.OR:
             Parser.tokenizer.select_next()
             other_bool_term = Parser.parse_relation_expression()
+            if other_bool_term is None:
+                raise ValueError('ERRO EM parse_bool_expression: É preciso uma ou mais expressões para fazer uma comparação!')
             bool_expression = nodes.BinOp(value='||', children=[bool_expression, other_bool_term])
-        
         return bool_expression
 
     @staticmethod
@@ -161,6 +162,8 @@ class Parser:
         while Parser.tokenizer.next.type == tokens.TokenType.AND:
             Parser.tokenizer.select_next()
             other_relation_expression = Parser.parse_relation_expression()
+            if other_relation_expression is None:
+                raise ValueError('ERRO EM parse_bool_expression: É preciso uma ou mais expressões para fazer uma comparação!')
             bool_term = nodes.BinOp(value='&&', children=[bool_term, other_relation_expression])
         return bool_term
 

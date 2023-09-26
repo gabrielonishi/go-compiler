@@ -1,3 +1,5 @@
-for i = 0; i < 5; i = i + 1 {
-	Println(i)
+
+if 1 == 1 || {
+	x = 1
 }
+
