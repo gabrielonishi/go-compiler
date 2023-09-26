@@ -119,7 +119,20 @@ class Parser:
                 statement = nodes.If(value=None, children=[condition, if_block, else_block])
             else:
                 statement = nodes.If(value=None, children=[condition, if_block])
-        
+            
+        elif(Parser.tokenizer.next.type == tokens.TokenType.FOR):
+            Parser.tokenizer.select_next()
+            iteration_variable = Parser.assign()
+            if Parser.tokenizer.next.type != tokens.TokenType.COLON:
+                raise ValueError("Esperava-se ';' após inicialização de variável do loop for")
+            Parser.tokenizer.select_next()
+            condition = Parser.parse_bool_expression()
+            if Parser.tokenizer.next.type != tokens.TokenType.COLON:
+                raise ValueError("Esperava-se ';' após condição do loop for")
+            Parser.tokenizer.select_next()
+            increment = Parser.assign()
+            for_loop = Parser.parse_block()
+            statement = nodes.For(value=None, children=[iteration_variable, condition, increment, for_loop])
         else:
             statement = Parser.assign()
  
@@ -249,7 +262,6 @@ class Parser:
     
     @staticmethod
     def assign() -> nodes.Node:
-
         if Parser.tokenizer.next.type == tokens.TokenType.IDENTIFIER:
             variable = Parser.tokenizer.next.value
             identifier = nodes.Identifier(value=variable, children=[])
