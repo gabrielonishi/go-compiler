@@ -45,7 +45,9 @@ class BinOp(Node):
     '''
     Binary Operation - podendo ser +, -, *, /
 
-    Contém 2 filhos
+    value: None
+
+    children: 2 (children[0] operação children[1])
     '''
 
     def evaluate(self, symbol_table: SymbolTable):
@@ -73,7 +75,9 @@ class UnOp(Node):
     '''
     Unary Operation - podendo ser + ou -
 
-    Contém apenas um filho
+    value: None
+
+    children: 1 (qualquer tipo)
     '''
 
     def evaluate(self, symbol_table: SymbolTable):
@@ -89,7 +93,9 @@ class IntVal(Node):
     '''
     Integer Value - Representa um valor inteiro
 
-    Não contém filhos
+    value: Int
+
+    children: []
     '''
 
     def evaluate(self, symbol_table: SymbolTable):
@@ -100,7 +106,9 @@ class NoOp(Node):
     '''
     No Operation - Nó Dummy
 
-    Não contém filhos
+    value: None
+
+    children: []
     '''
 
     def evaluate(self, symbol_table: SymbolTable):
@@ -111,7 +119,9 @@ class Identifier(Node):
     '''
     Identificador - Variável à qual é atribuido um valor
 
-    Não contém filhos
+    value: qualquer tipo
+
+    children: []
     '''
 
     def evaluate(self, symbol_table: SymbolTable):
@@ -122,7 +132,9 @@ class Print(Node):
     '''
     Print
 
-    Contém apenas um filho
+    value: None
+
+    children: 1
     '''
 
     def evaluate(self, symbol_table: SymbolTable):
@@ -134,7 +146,9 @@ class Program(Node):
     Representa o programa como um todo. Deve ser chamado apenas
     uma vez pelo parser.
 
-    Contém n filhos, todos statements
+    value: None
+
+    children: n (um por linha com instruções do programa)
     '''
 
     def evaluate(self, symbol_table: SymbolTable):
@@ -143,10 +157,11 @@ class Program(Node):
 
 class Block(Node):
     '''
-    Bloco
-    Contém n filhos (um por linha com instruções do programa)
+    Bloco de instruções (for, if)
 
-    Não possui value
+    value: None
+
+    children: n (um por linha com instruções do programa)
     '''
 
     def evaluate(self, symbol_table: SymbolTable):
@@ -158,7 +173,9 @@ class Assignment(Node):
     '''
     Representa variável
 
-    Possui 2 filhos:
+    value: None
+
+    children: 2
      - children[0] -> identifier
      - children[1] -> ast
     '''
@@ -173,7 +190,9 @@ class Scanln(Node):
     '''
     Input de variável no terminal
 
-    Não possui value nem children
+    value: None
+
+    children: []
     '''
     def evaluate(self, symbol_table: SymbolTable):
         return int(input())
@@ -182,7 +201,9 @@ class If(Node):
     '''
     Condicional
 
-    Possui 2 ou 3 filhos:
+    value: None
+
+    children: 2 ou 3
      - children[0] -> condicional
      - children[1] -> bloco a ser executado se true
      - children[2] -> bloco a ser executado no else (opcional)
@@ -202,7 +223,9 @@ class For(Node):
     '''
     Loop de for
 
-    Possui 4 filhos:
+    value: None
+
+    children: 4
      - children[0] -> variável de iteração
      - children[1] -> condição
      - children[2] -> incremento
