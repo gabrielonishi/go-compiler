@@ -2,30 +2,13 @@
 
 Projeto individual de um compilador para a disciplina Lógica da Computação, do 7° semestre de engenharia de computação. C
 
-![git status](http://3.129.230.99/svg/gabrielonishi/go-compiler/)
+### Adicionando operação de potência no compilador
 
-### Diagrama Sintático (v2.2)
-
-![Diagrama sintático](./diagrama6.drawio.png)
-
-### Para rodar o programa
-```shell
-python3.py main.py entrada.go
-```
-
-### EBNF (v2.1)
-
-```
-BLOCK = { STATEMENT };
-STATEMENT = ( λ | ASSIGNMENT | PRINT), "\n" ;
-ASSIGNMENT = IDENTIFIER, "=", EXPRESSION ;
-PRINT = "Println", "(", EXPRESSION, ")" ;
-EXPRESSION = TERM, { ("+" | "-"), TERM } ;
-TERM = FACTOR, { ("*" | "/"), FACTOR } ;
-FACTOR = (("+" | "-"), FACTOR) | NUMBER | "(", EXPRESSION, ")" | IDENTIFIER ;
-IDENTIFIER = LETTER, { LETTER | DIGIT | "_" } ;
-NUMBER = DIGIT, { DIGIT } ;
-LETTER = ( a | ... | z | A | ... | Z ) ;
-DIGIT = ( 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 ) ;
-```
-
+Passos para aplicação:
+ 1. Colocar caractere `'^'` no tokenizer
+ 2. Adicionar operação children[0] ** children[2] no evaluate do BinOp
+ 3. Modificar Parser: 
+ - fazer com que parse_term() começe calculando um parse_power_term() 
+ - fazer um parse_power_term() em que:     
+    - calculamos próximo parse_factor()
+    - loopamos enquanto for `'^'`, calculamos próximo factor e criamos nó BinOp com value = '^' e children = [factor1, factor2]

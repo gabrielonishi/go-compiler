@@ -77,6 +77,7 @@ class TokenType(Enum):
     FOR = auto()
     ELSE = auto()
     COLON = auto()
+    POWER = auto()
 
 class Token:
     '''
@@ -95,7 +96,7 @@ class Tokenizer:
 Println(x)en da expressão, alterando a posição de análise
     '''
 
-    OPERATORS = ['-', '+', '*', '/', '(', ')', '=', '\n', '&', '|', '>', '<', '!', '{', '}', ';']
+    OPERATORS = ['-', '+', '*', '/', '(', ')', '=', '\n', '&', '|', '>', '<', '!', '{', '}', ';', '^']
     RESERVED_KEYWORDS = ['Println', 'Scanln', 'if', 'else', 'for']
 
     def __init__(self, source: str) -> None:
@@ -134,6 +135,8 @@ Println(x)en da expressão, alterando a posição de análise
                 self.next = Token(value='}', type=TokenType.CLOSE_BRACKET)
             elif self.source[self.position] == ';':
                 self.next = Token(value=';', type=TokenType.COLON)
+            elif self.source[self.position] == '^':
+                self.next = Token(value='^', type=TokenType.POWER)
             elif self.source[self.position] == '=':
                 if self.source[self.position + 1] == '=':
                     self.next = Token(value='==', type=TokenType.EQUALITY)
