@@ -4,28 +4,24 @@ Projeto individual de um compilador para a disciplina Lógica da Computação, d
 
 ![git status](http://3.129.230.99/svg/gabrielonishi/go-compiler/)
 
-### Diagrama Sintático (v2.2)
+### Adicionando resto de divisão
 
-![Diagrama sintático](./diagrama6.drawio.png)
+Só é necessário mudar o Factor
 
-### Para rodar o programa
-```shell
-python3.py main.py entrada.go
-```
+![rascunho.png](rascunho.png)
 
-### EBNF (v2.1)
+Passos para aplicação:
 
-```
-BLOCK = { STATEMENT };
-STATEMENT = ( λ | ASSIGNMENT | PRINT), "\n" ;
-ASSIGNMENT = IDENTIFIER, "=", EXPRESSION ;
-PRINT = "Println", "(", EXPRESSION, ")" ;
-EXPRESSION = TERM, { ("+" | "-"), TERM } ;
-TERM = FACTOR, { ("*" | "/"), FACTOR } ;
-FACTOR = (("+" | "-"), FACTOR) | NUMBER | "(", EXPRESSION, ")" | IDENTIFIER ;
-IDENTIFIER = LETTER, { LETTER | DIGIT | "_" } ;
-NUMBER = DIGIT, { DIGIT } ;
-LETTER = ( a | ... | z | A | ... | Z ) ;
-DIGIT = ( 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 ) ;
-```
+No Tokenizer:
+ - Se for %, criar Token INC
 
+Em nodes:
+ - Em BinOp, se value = %, evaluate = children[0] % children[1]
+
+No parser:
+ - No método parse_term()
+ - depois de achar factor
+ - while next_value = * ou / ou %
+    - se %
+        - new_factor = parse_factor()
+        - BinOp(value = %, [factor, new_factor])

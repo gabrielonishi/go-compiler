@@ -77,6 +77,7 @@ class TokenType(Enum):
     FOR = auto()
     ELSE = auto()
     COLON = auto()
+    REST = auto()
 
 class Token:
     '''
@@ -95,7 +96,7 @@ class Tokenizer:
 Println(x)en da expressão, alterando a posição de análise
     '''
 
-    OPERATORS = ['-', '+', '*', '/', '(', ')', '=', '\n', '&', '|', '>', '<', '!', '{', '}', ';']
+    OPERATORS = ['-', '+', '*', '/', '(', ')', '=', '\n', '&', '|', '>', '<', '!', '{', '}', ';', '%']
     RESERVED_KEYWORDS = ['Println', 'Scanln', 'if', 'else', 'for']
 
     def __init__(self, source: str) -> None:
@@ -110,6 +111,8 @@ Println(x)en da expressão, alterando a posição de análise
         elif self.source[self.position] in Tokenizer.OPERATORS:
             if self.source[self.position] == '-':
                 self.next = Token(value='-', type=TokenType.MINUS)
+            elif self.source[self.position] == '%':
+                self.next = Token(value='%', type=TokenType.REST)
             elif self.source[self.position] == '+':
                 self.next = Token(value='+', type=TokenType.PLUS)
             elif self.source[self.position] == '*':

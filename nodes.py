@@ -69,6 +69,8 @@ class BinOp(Node):
             return self.children[0].evaluate(symbol_table) > self.children[1].evaluate(symbol_table)
         elif self.value == '<':
             return self.children[0].evaluate(symbol_table) < self.children[1].evaluate(symbol_table)
+        elif self.value == '%':
+            return self.children[0].evaluate(symbol_table) % self.children[1].evaluate(symbol_table)
 
 
 class UnOp(Node):

@@ -161,7 +161,7 @@ class Parser:
     @staticmethod
     def parse_term() -> nodes.Node:
         factor = Parser.parse_factor()
-        while Parser.tokenizer.next.value == '*' or Parser.tokenizer.next.value == '/':
+        while Parser.tokenizer.next.value == '*' or Parser.tokenizer.next.value == '/' or Parser.tokenizer.next.value =='%':
             if Parser.tokenizer.next.value == '*':
                 Parser.tokenizer.select_next()
                 children = Parser.parse_factor()
@@ -170,6 +170,10 @@ class Parser:
                 Parser.tokenizer.select_next()
                 children = Parser.parse_factor()
                 factor = nodes.BinOp(value='/', children=[factor, children])
+            elif Parser.tokenizer.next.value == '%':
+                Parser.tokenizer.select_next()
+                children = Parser.parse_factor()
+                factor = nodes.BinOp(value='%', children = [factor, children])
         return factor
 
     @staticmethod
