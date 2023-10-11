@@ -2,30 +2,27 @@
 
 Projeto individual de um compilador para a disciplina Lógica da Computação, do 7° semestre de engenharia de computação. C
 
-![git status](http://3.129.230.99/svg/gabrielonishi/go-compiler/)
+### Adicionando operação de incrementa no compilador
 
-### Diagrama Sintático (v2.2)
+Só é necessário mudar o Assign
 
-![Diagrama sintático](./diagrama6.drawio.png)
+![mudanca.png](mudanca.png)
 
-### Para rodar o programa
-```shell
-python3.py main.py entrada.go
-```
+Passos para aplicação:
 
-### EBNF (v2.1)
+No Tokenizer:
+    - Toda vez que tiver um +, ver se é uma adição ou um incrementa
+    - Se for incrementa, criar Token INC
 
-```
-BLOCK = { STATEMENT };
-STATEMENT = ( λ | ASSIGNMENT | PRINT), "\n" ;
-ASSIGNMENT = IDENTIFIER, "=", EXPRESSION ;
-PRINT = "Println", "(", EXPRESSION, ")" ;
-EXPRESSION = TERM, { ("+" | "-"), TERM } ;
-TERM = FACTOR, { ("*" | "/"), FACTOR } ;
-FACTOR = (("+" | "-"), FACTOR) | NUMBER | "(", EXPRESSION, ")" | IDENTIFIER ;
-IDENTIFIER = LETTER, { LETTER | DIGIT | "_" } ;
-NUMBER = DIGIT, { DIGIT } ;
-LETTER = ( a | ... | z | A | ... | Z ) ;
-DIGIT = ( 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 ) ;
-```
+Em nodes:
+    - Não precisa fazer nada
 
+No parser:
+    - No método parse_assign:
+        > depois de achar identifier
+        > se tiver um + e depois outro +
+            > consumir o Token
+            > Criar um nó IntVal(value = '1', children = [])
+            > Criar um nó BinOp(value = '+', children = [nó IntVal, nó Identifier])
+            > retornar nó Assignment(value = None, children = [nó identifier, nó BinOp])
+        > caso contrário, seguir como anteriormente

@@ -77,6 +77,7 @@ class TokenType(Enum):
     FOR = auto()
     ELSE = auto()
     COLON = auto()
+    INC = auto()
 
 class Token:
     '''
@@ -111,7 +112,11 @@ Println(x)en da expressão, alterando a posição de análise
             if self.source[self.position] == '-':
                 self.next = Token(value='-', type=TokenType.MINUS)
             elif self.source[self.position] == '+':
-                self.next = Token(value='+', type=TokenType.PLUS)
+                if self.source[self.position + 1] == '+':
+                    self.next = Token(value='++', type=TokenType.INC)
+                    self.position += 1
+                else:      
+                    self.next = Token(value='+', type=TokenType.PLUS)
             elif self.source[self.position] == '*':
                 self.next = Token(value='*', type=TokenType.MULT)
             elif self.source[self.position] == '/':

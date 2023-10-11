@@ -1,4 +1,5 @@
-import nodes, tokens
+import nodes
+import tokens
 
 
 class Parser:
@@ -230,6 +231,11 @@ class Parser:
         variable = Parser.tokenizer.next.value
         identifier = nodes.Identifier(value=variable, children=[])
         Parser.tokenizer.select_next()
+        if Parser.tokenizer.next.type == tokens.TokenType.INC:
+            Parser.tokenizer.select_next()
+            value_node = nodes.IntVal(1, [])
+            ast = nodes.BinOp(value='+', children=[value_node, identifier])
+            return nodes.Assignment(value=None, children=[identifier, ast])
         if Parser.tokenizer.next.type != tokens.TokenType.ATTRIBUTE:
             raise ValueError(
                 'ERRO EM Parser.assign(): Não passou um operador "="')
