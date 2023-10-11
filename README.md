@@ -1,7 +1,8 @@
 # Go Compiler
 
-Projeto individual de um compilador para a disciplina Lógica da Computação, do 7° semestre de engenharia de computação. C
+Projeto individual de um compilador para a disciplina Lógica da Computação, do 7° semestre de engenharia de computação.
 
+<<<<<<< HEAD
 ### Adicionando operação de incrementa no compilador
 
 Só é necessário mudar o Assign
