@@ -77,6 +77,7 @@ class TokenType(Enum):
     FOR = auto()
     ELSE = auto()
     COLON = auto()
+    STRING = auto()
 
 class Token:
     '''
@@ -153,6 +154,14 @@ Println(x)en da expressão, alterando a posição de análise
                 else:
                     raise ValueError("ERRO EM Tokenizer.select_next(): '|' não é um operador válido. Você quis dizer '||'?")
             self.position += 1
+        elif self.source[self.position] == '"':
+            this_string = ''
+            self.position += 1
+            while self.source[self.position] != '"':
+                this_string += self.source[self.position]
+                self.position +=1
+            self.position += 1
+            self.next = Token(value=this_string, type=TokenType.STRING)
         elif self.source[self.position].isdigit():
             this_value = ''
             while self.position != len(self.source) and self.source[self.position].isdigit():

@@ -102,6 +102,21 @@ class IntVal(Node):
         return self.value
 
 
+class StringVal(Node):
+    '''
+    String Value - Representa uma string
+
+    value: String
+
+    children = 0
+
+    evaluate retorna seu valor
+    '''
+
+    def evaluate(self, symbol_table: SymbolTable):
+        return self.value
+
+
 class NoOp(Node):
     '''
     No Operation - Nó Dummy
@@ -155,6 +170,7 @@ class Program(Node):
         for statement in self.children:
             statement.evaluate(symbol_table)
 
+
 class Block(Node):
     '''
     Bloco de instruções (for, if)
@@ -194,8 +210,10 @@ class Scanln(Node):
 
     children: []
     '''
+
     def evaluate(self, symbol_table: SymbolTable):
         return int(input())
+
 
 class If(Node):
     '''
@@ -217,7 +235,7 @@ class If(Node):
         elif len(self.children) == 3:
             else_block = self.children[2]
             else_block.evaluate(symbol_table)
-    
+
 
 class For(Node):
     '''
@@ -234,6 +252,6 @@ class For(Node):
 
     def evaluate(self, symbol_table: SymbolTable):
         self.children[0].evaluate(symbol_table)
-        while(self.children[1].evaluate(symbol_table)):
+        while (self.children[1].evaluate(symbol_table)):
             self.children[3].evaluate(symbol_table)
             self.children[2].evaluate(symbol_table)

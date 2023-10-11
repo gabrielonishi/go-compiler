@@ -47,7 +47,11 @@ class Parser:
                 raise ValueError(
                     "ERRO EM parse_statement(): Não abriu parênteses para print")
             Parser.tokenizer.select_next()
-            expression = Parser.parse_bool_expression()
+            if Parser.tokenizer.next.type == tokens.TokenType.STRING:
+                expression = nodes.StringVal(value=Parser.tokenizer.next.value, children=[])
+                Parser.tokenizer.select_next()
+            else:
+                expression = Parser.parse_bool_expression()
             if Parser.tokenizer.next.type != tokens.TokenType.CLOSE_PARENTHESIS:
                 raise ValueError(
                     "ERRO EM parse_statement(): Não fechou parênteses para print")
@@ -234,6 +238,11 @@ class Parser:
             raise ValueError(
                 'ERRO EM Parser.assign(): Não passou um operador "="')
         Parser.tokenizer.select_next()
+        if Parser.tokenizer.next.type == tokens.TokenType.STRING:
+            string_val = Parser.tokenizer.next.value
+            Parser.tokenizer.select_next()
+            string_node = nodes.StringVal(value=string_val, children=[])
+            return nodes.Assignment(value=None, children=[identifier, string_node])
         bool_expression = Parser.parse_bool_expression()
         return nodes.Assignment(value=None, children=[identifier, bool_expression])
 
