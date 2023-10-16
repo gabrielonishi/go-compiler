@@ -1,4 +1,5 @@
-import nodes, tokens
+import nodes
+import tokens
 
 
 class Parser:
@@ -18,7 +19,8 @@ class Parser:
 
     @staticmethod
     def parse_block() -> nodes.Node:
-        if Parser.tokenizer.next.type != tokens.TokenType.OPEN_BRACKET:
+        if Parser.tokenizer.next.value != "{":
+            print(Parser.tokenizer.next.value)
             raise ValueError(
                 "ERRO EM Parser.parse_block(): É necessário começar um novo bloco com '{'")
         Parser.tokenizer.select_next()
@@ -28,11 +30,11 @@ class Parser:
         Parser.tokenizer.select_next()
         block = nodes.Block(value=None, children=[])
         statements = list()
-        while (Parser.tokenizer.next.type != tokens.TokenType.CLOSE_BRACKET):
+        while Parser.tokenizer.next.value != "}":
             statement = Parser.parse_statement()
             statements.append(statement)
         block = nodes.Block(value=None, children=statements)
-        if Parser.tokenizer.next.type != tokens.TokenType.CLOSE_BRACKET:
+        if Parser.tokenizer.next.value != "}":
             raise ValueError(
                 "ERRO EM Parser.parse_block(): Não fechou bloco com '}'")
         Parser.tokenizer.select_next()
@@ -43,12 +45,12 @@ class Parser:
 
         if Parser.tokenizer.next.type == tokens.TokenType.PRINT:
             Parser.tokenizer.select_next()
-            if Parser.tokenizer.next.type != tokens.TokenType.OPEN_PARENTHESIS:
+            if Parser.tokenizer.next.value != "(":
                 raise ValueError(
                     "ERRO EM parse_statement(): Não abriu parênteses para print")
             Parser.tokenizer.select_next()
             expression = Parser.parse_bool_expression()
-            if Parser.tokenizer.next.type != tokens.TokenType.CLOSE_PARENTHESIS:
+            if Parser.tokenizer.next.value != ")":
                 raise ValueError(
                     "ERRO EM parse_statement(): Não fechou parênteses para print")
             Parser.tokenizer.select_next()
@@ -70,12 +72,12 @@ class Parser:
         elif (Parser.tokenizer.next.type == tokens.TokenType.FOR):
             Parser.tokenizer.select_next()
             iteration_variable = Parser.assign()
-            if Parser.tokenizer.next.type != tokens.TokenType.COLON:
+            if Parser.tokenizer.next.type != tokens.TokenType.SEMICOLON:
                 raise ValueError(
                     "Esperava-se ';' após inicialização de variável do loop for")
             Parser.tokenizer.select_next()
             condition = Parser.parse_bool_expression()
-            if Parser.tokenizer.next.type != tokens.TokenType.COLON:
+            if Parser.tokenizer.next.type != tokens.TokenType.SEMICOLON:
                 raise ValueError("Esperava-se ';' após condição do loop for")
             Parser.tokenizer.select_next()
             increment = Parser.assign()
@@ -97,7 +99,7 @@ class Parser:
     def parse_bool_expression() -> nodes.Node:
         bool_expression = Parser.parse_bool_term()
 
-        while Parser.tokenizer.next.type == tokens.TokenType.OR:
+        while Parser.tokenizer.next.value == "||":
             Parser.tokenizer.select_next()
             other_bool_term = Parser.parse_relation_expression()
             if other_bool_term is None:
@@ -110,7 +112,7 @@ class Parser:
     @staticmethod
     def parse_bool_term() -> nodes.Node:
         bool_term = Parser.parse_relation_expression()
-        while Parser.tokenizer.next.type == tokens.TokenType.AND:
+        while Parser.tokenizer.next.value == "&&":
             Parser.tokenizer.select_next()
             other_relation_expression = Parser.parse_relation_expression()
             if other_relation_expression is None:
@@ -124,20 +126,18 @@ class Parser:
     def parse_relation_expression() -> nodes.Node:
         relation_expression = Parser.parse_expression()
 
-        POSSIBLE_OPERATIONS = [tokens.TokenType.EQUALITY,
-                               tokens.TokenType.GREATERTHAN, tokens.TokenType.LESSERTHAN]
-        while Parser.tokenizer.next.type in POSSIBLE_OPERATIONS:
-            if Parser.tokenizer.next.type == tokens.TokenType.EQUALITY:
+        while Parser.tokenizer.next.type == tokens.TokenType.NUMERIC_COMPARISON:
+            if Parser.tokenizer.next.value == "==":
                 Parser.tokenizer.select_next()
                 other_expression = Parser.parse_expression()
                 relation_expression = nodes.BinOp(
                     value='==', children=[relation_expression, other_expression])
-            elif Parser.tokenizer.next.type == tokens.TokenType.GREATERTHAN:
+            elif Parser.tokenizer.next.value == ">":
                 Parser.tokenizer.select_next()
                 other_expression = Parser.parse_expression()
                 relation_expression = nodes.BinOp(
                     value='>', children=[relation_expression, other_expression])
-            elif Parser.tokenizer.next.type == tokens.TokenType.LESSERTHAN:
+            elif Parser.tokenizer.next.value == "<":
                 Parser.tokenizer.select_next()
                 other_expression = Parser.parse_expression()
                 relation_expression = nodes.BinOp(
@@ -147,7 +147,7 @@ class Parser:
     @staticmethod
     def parse_expression():
         term = Parser.parse_term()
-        while Parser.tokenizer.next.value == '-' or Parser.tokenizer.next.value == '+':
+        while Parser.tokenizer.next.type == tokens.TokenType.FIRST_ORDER_OPERATIONS:
             if Parser.tokenizer.next.value == '-':
                 Parser.tokenizer.select_next()
                 children = Parser.parse_term()
@@ -161,7 +161,7 @@ class Parser:
     @staticmethod
     def parse_term() -> nodes.Node:
         factor = Parser.parse_factor()
-        while Parser.tokenizer.next.value == '*' or Parser.tokenizer.next.value == '/':
+        while Parser.tokenizer.next.type == tokens.TokenType.SECOND_ORDER_OPERATIONS:
             if Parser.tokenizer.next.value == '*':
                 Parser.tokenizer.select_next()
                 children = Parser.parse_factor()
@@ -179,12 +179,12 @@ class Parser:
             Parser.tokenizer.select_next()
             node = nodes.IntVal(factor, [])
             return node
-        elif Parser.tokenizer.next.type == tokens.TokenType.MINUS:
+        elif Parser.tokenizer.next.value == "-":
             Parser.tokenizer.select_next()
             factor = Parser.parse_factor()
             node = nodes.UnOp('-', [factor])
             return node
-        elif Parser.tokenizer.next.type == tokens.TokenType.PLUS:
+        elif Parser.tokenizer.next.value == "+":
             Parser.tokenizer.select_next()
             factor = Parser.parse_factor()
             node = nodes.UnOp('+', [factor])
@@ -194,10 +194,10 @@ class Parser:
             factor = Parser.parse_factor()
             node = nodes.UnOp('!', children=[factor])
             return node
-        elif Parser.tokenizer.next.type == tokens.TokenType.OPEN_PARENTHESIS:
+        elif Parser.tokenizer.next.value == "(":
             Parser.tokenizer.select_next()
             expression = Parser.parse_bool_expression()
-            if Parser.tokenizer.next.type == tokens.TokenType.CLOSE_PARENTHESIS:
+            if Parser.tokenizer.next.value == ")":
                 Parser.tokenizer.select_next()
                 return expression
             else:
@@ -210,11 +210,11 @@ class Parser:
             return factor
         elif Parser.tokenizer.next.type == tokens.TokenType.SCANLN:
             Parser.tokenizer.select_next()
-            if (Parser.tokenizer.next.type != tokens.TokenType.OPEN_PARENTHESIS):
+            if Parser.tokenizer.next.value != "(":
                 raise ValueError(
                     'ERRO EM Parser.parse_factor: Não abriu parênteses depois de Scanln')
             Parser.tokenizer.select_next()
-            if (Parser.tokenizer.next.type != tokens.TokenType.CLOSE_PARENTHESIS):
+            if Parser.tokenizer.next.value != ")":
                 raise ValueError(
                     'ERRO EM Parser.parse_factor: Não fechou parênteses após Scanln')
             Parser.tokenizer.select_next()
