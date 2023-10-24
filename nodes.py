@@ -67,15 +67,14 @@ class BinOp(Node):
         right_term_value, right_term_type = self.children[1].evaluate(
             symbol_table)
 
-        if left_term_type != right_term_type:
-            raise ValueError(
-                "Erro em BinOp: Tentativa de operação com tipos diferentes")
-
         ARITHIMETIC_OPERATORS = ['+, -, *, /']
         BOOLEAN_OPERATORS = ['||', '&&']
         RELATIONAL_OPERATORS = ['>', '<', '==']
 
         if self.value in ARITHIMETIC_OPERATORS:
+            if (left_term_type == VarType.STRING or right_term_type == VarType.STRING):
+                raise ValueError(
+                    "Erro em nodes.BinOp.evaluate(): Não é possível fazer operações aritiméticas envolvendo strings")
             return_type = VarType.INT
             if self.value == '+':
                 return_value = left_term_value + right_term_value
@@ -90,7 +89,7 @@ class BinOp(Node):
                 return_value = left_term_value // right_term_value
                 return (return_value, return_type)
 
-        if self.value in BOOLEAN_OPERATORS or self.value in RELATIONAL_OPERATORS:
+        elif self.value in BOOLEAN_OPERATORS:
             return_type = VarType.INT
             if self.value == '||':
                 return_value = left_term_value or right_term_value
@@ -98,7 +97,10 @@ class BinOp(Node):
             elif self.value == '&&':
                 return_value = left_term_value and right_term_value
                 return (int(return_value), return_type)
-            elif self.value == '==':
+        
+        elif self.value in RELATIONAL_OPERATORS:
+            return_type = VarType.INT
+            if self.value == '==':
                 return_value = left_term_value == right_term_value
                 return (int(return_value), return_type)
             elif self.value == '>':
@@ -107,6 +109,11 @@ class BinOp(Node):
             elif self.value == '<':
                 return_value = left_term_value < right_term_value
                 return (int(return_value), return_type)
+        
+        elif self.value == '.':
+            return_type = VarType.STRING
+            return_value = left_term_type + right_term_type
+            return (return_value, return_type)
 
 
 class UnOp(Node):
@@ -170,6 +177,7 @@ class StringVal(Node):
 
     def evaluate(self, symbol_table: SymbolTable) -> tuple:
         return (self.value, VarType.STRING)
+
 
 class Identifier(Node):
     '''
