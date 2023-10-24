@@ -272,7 +272,7 @@ class VarDec(Node):
 
     def evaluate(self, symbol_table: SymbolTable) -> None:
         identifier = self.children[0]
-        if len(self.children == 1):
+        if len(self.children) == 1:
             SymbolTable.create_empty(symbol_table, identifier=identifier)
         elif len(self.children == 2):
             value = self.children[1].evaluate(symbol_table)

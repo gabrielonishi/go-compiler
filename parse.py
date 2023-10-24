@@ -102,12 +102,11 @@ class Parser:
                 statement = nodes.VarDec(value=None, children=[identifier])
         else:
             statement = Parser.assign()
-
         if Parser.tokenizer.next.type == tokens.TokenType.LINEFEED:
             Parser.tokenizer.select_next()
         else:
             raise ValueError(
-                f'ERRO EM parse_statement(): Valor {Parser.tokenizer.next.value} não esperado na posição {Parser.tokenizer.position}'
+                f'ERRO EM parse_statement(): Valor {repr(Parser.tokenizer.next.value)} não esperado na posição {Parser.tokenizer.position}'
             )
         return statement
 
@@ -199,6 +198,11 @@ class Parser:
             Parser.tokenizer.select_next()
             node = nodes.IntVal(factor, [])
             return node
+        elif Parser.tokenizer.next.type == tokens.TokenType.STRING:
+            string = Parser.tokenizer.next.value
+            Parser.tokenizer.select_next()
+            node = nodes.StringVal(string, [])
+            return node
         elif Parser.tokenizer.next.value == "-":
             Parser.tokenizer.select_next()
             factor = Parser.parse_factor()
@@ -243,7 +247,6 @@ class Parser:
 
     @staticmethod
     def assign() -> nodes.Node:
-
         if Parser.tokenizer.next.type != tokens.TokenType.IDENTIFIER:
             raise ValueError(
                 'ERRO EM Parser.assign(): Próximo token deveria ser um identifier, mas não é')

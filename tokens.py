@@ -77,6 +77,7 @@ class TokenType(Enum):
     VAR_TYPE = auto()
     CONCATENATE = auto()
 
+
 class Token:
     '''
     Encapsula informações definidoras de um token
@@ -158,22 +159,22 @@ class Tokenizer:
                     "ERRO EM Tokenizer.select_next(): '|' não é um operador válido. Você quis dizer '||'?")
         self.position += 1
 
-    def handle_reserved_keywords(self, this_identifier: str) -> None:
-        if this_identifier == 'Println':
+    def handle_reserved_keywords(self, key_word) -> None:
+        if key_word == 'Println':
             self.next = Token(value='Println', type=TokenType.PRINT)
-        elif this_identifier == 'Scanln':
+        elif key_word == 'Scanln':
             self.next = Token(value='Scanln', type=TokenType.SCANLN)
-        elif this_identifier == 'if':
+        elif key_word == 'if':
             self.next = Token(value='if', type=TokenType.IF)
-        elif this_identifier == 'for':
+        elif key_word == 'for':
             self.next = Token(value='for', type=TokenType.FOR)
-        elif this_identifier == 'else':
+        elif key_word == 'else':
             self.next = Token(value='else', type=TokenType.ELSE)
-        elif this_identifier == 'var':
+        elif key_word == 'var':
             self.next = Token(value='var', type=TokenType.VAR_DECLARATION)
-        elif this_identifier == 'string':
+        elif key_word == 'string':
             self.next = Token(value='string', type=TokenType.VAR_TYPE)
-        elif this_identifier == 'int':
+        elif key_word == 'int':
             self.next = Token(value='int', type=TokenType.VAR_TYPE)
 
     def select_next(self) -> None:
@@ -192,19 +193,20 @@ class Tokenizer:
             self.next = Token(value=int(this_value), type=TokenType.INT)
         elif next_character == '"':
             this_string = ''
+            self.position += 1
             while self.position != len(self.source) and self.source[self.position] != '"':
                 this_string += self.source[self.position]
                 self.position += 1
+            self.position += 1
             self.next = Token(value=this_string, type=TokenType.STRING)
         elif next_character.isalpha():
             this_identifier = ''
             while self.position != len(self.source) and (self.source[self.position].isalnum() or
-                                                         self.source[self.position] == '_'):
+                                                          self.source[self.position] == '_'):
                 this_identifier += self.source[self.position]
                 self.position += 1
             if (this_identifier in Tokenizer.RESERVED_KEYWORDS):
-                self.handle_reserved_keywords(
-                    self, this_identifier=this_identifier)
+                self.handle_reserved_keywords(key_word=this_identifier)
             else:
                 self.next = Token(value=this_identifier,
                                   type=TokenType.IDENTIFIER)
