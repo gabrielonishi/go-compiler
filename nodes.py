@@ -103,6 +103,10 @@ class BinOp(Node):
                 return (return_value, return_type)
 
         elif self.value in BOOLEAN_OPERATORS:
+            if (left_term_type == VarType.STRING or right_term_type == VarType.STRING):
+                raise ValueError(
+                    "Erro em nodes.BinOp.evaluate(): Não é possível fazer operações booleanas envolvendo strings")
+            
             return_type = VarType.INT
             if self.value == '||':
                 return_value = left_term_value or right_term_value
@@ -112,6 +116,9 @@ class BinOp(Node):
                 return (int(return_value), return_type)
 
         elif self.value in RELATIONAL_OPERATORS:
+            if (left_term_type == VarType.STRING or right_term_type == VarType.STRING):
+                raise ValueError(
+                    "Erro em nodes.BinOp.evaluate(): Não é possível fazer operações relacionais envolvendo strings")
             return_type = VarType.INT
             if self.value == '==':
                 return_value = left_term_value == right_term_value
