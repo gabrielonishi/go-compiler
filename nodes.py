@@ -53,7 +53,7 @@ class Node():
         self.value = value
         self.children = children
 
-    def evaluate(self, symbol_table: SymbolTable) -> tuple | None:
+    def evaluate(self, symbol_table: SymbolTable) -> tuple:
         pass
 
 
