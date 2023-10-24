@@ -20,7 +20,6 @@ class Parser:
     @staticmethod
     def parse_block() -> nodes.Node:
         if Parser.tokenizer.next.value != "{":
-            print(Parser.tokenizer.next.value)
             raise ValueError(
                 "ERRO EM Parser.parse_block(): É necessário começar um novo bloco com '{'")
         Parser.tokenizer.select_next()
@@ -50,7 +49,6 @@ class Parser:
                     "ERRO EM parse_statement(): Não abriu parênteses para print")
             Parser.tokenizer.select_next()
             expression = Parser.parse_bool_expression()
-            print(Parser.tokenizer.next.value)
             if Parser.tokenizer.next.value != ")":
                 raise ValueError(
                     "ERRO EM parse_statement(): Não fechou parênteses para print")

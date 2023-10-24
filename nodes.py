@@ -119,7 +119,7 @@ class BinOp(Node):
 
         elif self.value == '.':
             return_type = VarType.STRING
-            return_value = left_term_type + right_term_type
+            return_value = left_term_value + right_term_value
             return (return_value, return_type)
 
 
@@ -209,7 +209,8 @@ class Print(Node):
     '''
 
     def evaluate(self, symbol_table: SymbolTable) -> None:
-        print(self.children[0].evaluate(symbol_table))
+        result_value, _ = self.children[0].evaluate(symbol_table)
+        print(result_value)
 
 
 class Program(Node):
