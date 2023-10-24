@@ -25,10 +25,17 @@ class SymbolTable():
     def set(self, identifier, value, var_type: VarType) -> None:
         if identifier not in list(self.symbol_table.keys()):
             raise ValueError("Tenta mudar variável antes de declará-la")
+        print(self.symbol_table)
+        last_value, last_type = self.symbol_table[identifier]
+        if last_type != var_type:
+            raise ValueError("Tenta mudar tipo de variável")
         self.symbol_table[identifier] = (value, var_type)
 
     def create_empty(self, identifier) -> None:
-        self.symbol_table[identifier] = None
+        if identifier in list(self.symbol_table.keys()):
+            raise ValueError("Não se pode criar um mesmo identifier 2 vezes")
+        
+        self.symbol_table[identifier] = (None, None)
 
     def create(self, identifier, value) -> None:
         self.symbol_table[identifier] = value
