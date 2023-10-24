@@ -1,3 +1,9 @@
+from enum import Enum, auto
+
+class VarType(Enum):
+    INT = auto()
+    STRING = auto()
+
 class SymbolTable():
     '''
     Serve como memória do compilador
@@ -14,8 +20,8 @@ class SymbolTable():
 
         return self.symbol_table[identifier]
 
-    def set(self, identifier, value):
-        self.symbol_table[identifier] = value
+    def set(self, identifier, value, var_type : VarType):
+        self.symbol_table[identifier] = (value, var_type)
 
     def get_table(self):
         return self.symbol_table
@@ -37,7 +43,7 @@ class Node():
         self.value = value
         self.children = children
 
-    def evaluate(self, symbol_table: SymbolTable):
+    def evaluate(self, symbol_table: SymbolTable) -> tuple | None:
         pass
 
 
@@ -50,25 +56,40 @@ class BinOp(Node):
     children: 2 (children[0] operação children[1])
     '''
 
-    def evaluate(self, symbol_table: SymbolTable):
+    def evaluate(self, symbol_table: SymbolTable) -> tuple:
+        left_term_value, left_term_type = self.children[0].evaluate(symbol_table)
+        right_term_value, right_term_type = self.children[1].evaluate(symbol_table)
+
+        if left_term_type != right_term_type:
+            raise ValueError("Erro em BinOp: Tentativa de operação com tipos diferentes")
+
         if self.value == '+':
-            return self.children[0].evaluate(symbol_table) + self.children[1].evaluate(symbol_table)
+            return_value = (left_term_value + right_term_value, left_term_type)
+            return return_value
         elif self.value == '-':
-            return self.children[0].evaluate(symbol_table) - self.children[1].evaluate(symbol_table)
+            return_value = (left_term_value - right_term_value, left_term_type)
+            return return_value
         elif self.value == '*':
-            return self.children[0].evaluate(symbol_table) * self.children[1].evaluate(symbol_table)
+            return_value = (left_term_value * right_term_value, left_term_type)
+            return return_value
         elif self.value == '/':
-            return self.children[0].evaluate(symbol_table) // self.children[1].evaluate(symbol_table)
+            return_value = (left_term_value // right_term_value, left_term_type)
+            return return_value
         elif self.value == '||':
-            return self.children[0].evaluate(symbol_table) or self.children[1].evaluate(symbol_table)
+            return_value = (left_term_value or right_term_value, left_term_type)
+            return return_value
         elif self.value == '&&':
-            return self.children[0].evaluate(symbol_table) and self.children[1].evaluate(symbol_table)
+            return_value = (left_term_value and right_term_value, left_term_type)
+            return return_value
         elif self.value == '==':
-            return self.children[0].evaluate(symbol_table) == self.children[1].evaluate(symbol_table)
+            return_value = (left_term_value == right_term_value, left_term_type)
+            return return_value
         elif self.value == '>':
-            return self.children[0].evaluate(symbol_table) > self.children[1].evaluate(symbol_table)
+            return_value = (left_term_value > right_term_value, left_term_type)
+            return return_value
         elif self.value == '<':
-            return self.children[0].evaluate(symbol_table) < self.children[1].evaluate(symbol_table)
+            return_value = (left_term_value < right_term_value, left_term_type)
+            return return_value
 
 
 class UnOp(Node):
@@ -80,13 +101,19 @@ class UnOp(Node):
     children: 1 (qualquer tipo)
     '''
 
-    def evaluate(self, symbol_table: SymbolTable):
+    def evaluate(self, symbol_table: SymbolTable) -> tuple:
+        
+        term_value, term_type = self.children[0].evaluate(symbol_table)
+
         if self.value == '-':
-            return -self.children[0].evaluate(symbol_table)
+            return_value = (-term_value, term_type)
+            return return_value
         elif self.value == '+':
-            return self.children[0].evaluate(symbol_table)
+            return_value = (term_value, term_type)
+            return return_value
         elif self.value == '!':
-            return not self.children[0].evaluate(symbol_table)
+            return_value = (not term_value, term_type)
+            return return_value
 
 
 class IntVal(Node):
@@ -98,8 +125,8 @@ class IntVal(Node):
     children: []
     '''
 
-    def evaluate(self, symbol_table: SymbolTable):
-        return self.value
+    def evaluate(self, symbol_table: SymbolTable) -> tuple:
+        return (self.value, VarType.INT)
 
 
 class NoOp(Node):
@@ -111,7 +138,7 @@ class NoOp(Node):
     children: []
     '''
 
-    def evaluate(self, symbol_table: SymbolTable):
+    def evaluate(self, symbol_table: SymbolTable) -> None:
         return None
 
 
@@ -124,7 +151,7 @@ class Identifier(Node):
     children: []
     '''
 
-    def evaluate(self, symbol_table: SymbolTable):
+    def evaluate(self, symbol_table: SymbolTable) -> tuple:
         return symbol_table.get(identifier=self.value)
 
 
@@ -137,7 +164,7 @@ class Print(Node):
     children: 1
     '''
 
-    def evaluate(self, symbol_table: SymbolTable):
+    def evaluate(self, symbol_table: SymbolTable) -> None:
         print(self.children[0].evaluate(symbol_table))
 
 
@@ -151,7 +178,7 @@ class Program(Node):
     children: n (um por linha com instruções do programa)
     '''
 
-    def evaluate(self, symbol_table: SymbolTable):
+    def evaluate(self, symbol_table: SymbolTable) -> tuple:
         for statement in self.children:
             statement.evaluate(symbol_table)
 
@@ -164,7 +191,7 @@ class Block(Node):
     children: n (um por linha com instruções do programa)
     '''
 
-    def evaluate(self, symbol_table: SymbolTable):
+    def evaluate(self, symbol_table: SymbolTable) -> tuple:
         for child in self.children:
             child.evaluate(symbol_table)
 
@@ -180,7 +207,7 @@ class Assignment(Node):
      - children[1] -> ast
     '''
 
-    def evaluate(self, symbol_table: SymbolTable):
+    def evaluate(self, symbol_table: SymbolTable) -> tuple:
         variable = self.children[0].value
         ast_result = self.children[1].evaluate(symbol_table)
         symbol_table.set(identifier=variable, value=ast_result)
@@ -194,8 +221,8 @@ class Scanln(Node):
 
     children: []
     '''
-    def evaluate(self, symbol_table: SymbolTable):
-        return int(input())
+    def evaluate(self, symbol_table: SymbolTable) -> tuple:
+        return (int(input()), VarType.INT)
 
 class If(Node):
     '''
@@ -209,7 +236,7 @@ class If(Node):
      - children[2] -> bloco a ser executado no else (opcional)
     '''
 
-    def evaluate(self, symbol_table: SymbolTable):
+    def evaluate(self, symbol_table: SymbolTable) -> tuple:
         condition = self.children[0]
         true_block = self.children[1]
         if condition.evaluate(symbol_table):
@@ -232,7 +259,7 @@ class For(Node):
      - children[3] -> bloco
     '''
 
-    def evaluate(self, symbol_table: SymbolTable):
+    def evaluate(self, symbol_table: SymbolTable) -> tuple:
         self.children[0].evaluate(symbol_table)
         while(self.children[1].evaluate(symbol_table)):
             self.children[3].evaluate(symbol_table)
