@@ -21,6 +21,9 @@ class SymbolTable():
         return self.symbol_table[identifier]
 
     def set(self, identifier, value, var_type : VarType):
+        variable = self.symbol_table[identifier]
+        if variable is None:
+            raise ValueError("Tenta mudar variável antes de declará-la")
         self.symbol_table[identifier] = (value, var_type)
 
     def get_table(self):
@@ -63,34 +66,42 @@ class BinOp(Node):
         if left_term_type != right_term_type:
             raise ValueError("Erro em BinOp: Tentativa de operação com tipos diferentes")
 
-        if self.value == '+':
-            return_value = (left_term_value + right_term_value, left_term_type)
-            return return_value
-        elif self.value == '-':
-            return_value = (left_term_value - right_term_value, left_term_type)
-            return return_value
-        elif self.value == '*':
-            return_value = (left_term_value * right_term_value, left_term_type)
-            return return_value
-        elif self.value == '/':
-            return_value = (left_term_value // right_term_value, left_term_type)
-            return return_value
-        elif self.value == '||':
-            return_value = (left_term_value or right_term_value, left_term_type)
-            return return_value
-        elif self.value == '&&':
-            return_value = (left_term_value and right_term_value, left_term_type)
-            return return_value
-        elif self.value == '==':
-            return_value = (left_term_value == right_term_value, left_term_type)
-            return return_value
-        elif self.value == '>':
-            return_value = (left_term_value > right_term_value, left_term_type)
-            return return_value
-        elif self.value == '<':
-            return_value = (left_term_value < right_term_value, left_term_type)
-            return return_value
+        ARITHIMETIC_OPERATORS = ['+, -, *, /']
+        BOOLEAN_OPERATORS = ['||', '&&']
+        RELATIONAL_OPERATORS = ['>', '<', '==']
 
+        if self.value in ARITHIMETIC_OPERATORS:
+            return_type = VarType.INT
+            if self.value == '+':
+                return_value = left_term_value + right_term_value
+                return (return_value, return_type)
+            elif self.value == '-':
+                return_value = left_term_value - right_term_value
+                return (return_value, return_type)
+            elif self.value == '*':
+                return_value = left_term_value * right_term_value
+                return (return_value, return_type)
+            elif self.value == '/':
+                return_value = left_term_value // right_term_value
+                return (return_value, return_type)
+        
+        if self.value in BOOLEAN_OPERATORS or self.value in RELATIONAL_OPERATORS:
+            return_type = VarType.INT
+            if self.value == '||':
+                return_value = left_term_value or right_term_value
+                return (int(return_value), return_type)
+            elif self.value == '&&':
+                return_value = left_term_value and right_term_value
+                return (int(return_value), return_type)
+            elif self.value == '==':
+                return_value = left_term_value == right_term_value
+                return (int(return_value), return_type)
+            elif self.value == '>':
+                return_value = left_term_value > right_term_value
+                return (int(return_value), return_type)
+            elif self.value == '<':
+                return_value = left_term_value < right_term_value
+                return (int(return_value), return_type)
 
 class UnOp(Node):
     '''
