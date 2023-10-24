@@ -84,6 +84,22 @@ class Parser:
             for_loop = Parser.parse_block()
             statement = nodes.For(value=None, children=[
                                   iteration_variable, condition, increment, for_loop])
+        
+        elif (Parser.tokenizer.next.type == tokens.TokenType.VAR_DECLARATION):
+            Parser.tokenizer.select_next()
+            if Parser.tokenizer.next.type != tokens.TokenType.IDENTIFIER:
+                raise ValueError("Erro em parse.parse_statement(): É necessário identifier depois de 'var'")
+            identifier = Parser.tokenizer.next.value
+            Parser.tokenizer.select_next()
+            if Parser.tokenizer.next.type != tokens.TokenType.VAR_TYPE:
+                raise ValueError("Erro em parse.parse_statement(): É necessário especificar tipo ao criar variável")
+            Parser.tokenizer.select_next()
+            if Parser.tokenizer.next.type == tokens.TokenType.ATTRIBUTE:
+                Parser.tokenizer.select_next()
+                bool_expression = Parser.parse_bool_expression()
+                statement = nodes.VarDec(value=None, children=[identifier, bool_expression])
+            else:
+                statement = nodes.VarDec(value=None, children=[identifier])
         else:
             statement = Parser.assign()
 
