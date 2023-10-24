@@ -23,8 +23,7 @@ class SymbolTable():
         return self.symbol_table[identifier]
 
     def set(self, identifier, value, var_type: VarType) -> None:
-        variable = self.symbol_table[identifier]
-        if variable is None:
+        if identifier not in list(self.symbol_table.keys()):
             raise ValueError("Tenta mudar variável antes de declará-la")
         self.symbol_table[identifier] = (value, var_type)
 
@@ -255,8 +254,8 @@ class Assignment(Node):
 
     def evaluate(self, symbol_table: SymbolTable) -> tuple:
         variable = self.children[0].value
-        ast_result = self.children[1].evaluate(symbol_table)
-        symbol_table.set(identifier=variable, value=ast_result)
+        ast_result_value, ast_type_value = self.children[1].evaluate(symbol_table)
+        symbol_table.set(identifier=variable, value=ast_result_value, var_type= ast_type_value)
 
 
 class VarDec(Node):
