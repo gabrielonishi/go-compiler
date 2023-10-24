@@ -18,6 +18,8 @@ class PrePro():
             if source[i:i+2] == '//':
                 while source[i] != '\n':
                     i += 1
+                    if i == len(source):
+                        break
             elif source[i:i+2] == '/*':
                 while source[i:i+2] != '*/':
                     i += 1
@@ -201,7 +203,7 @@ class Tokenizer:
         elif next_character.isalpha():
             this_identifier = ''
             while self.position != len(self.source) and (self.source[self.position].isalnum() or
-                                                          self.source[self.position] == '_'):
+                                                         self.source[self.position] == '_'):
                 this_identifier += self.source[self.position]
                 self.position += 1
             if (this_identifier in Tokenizer.RESERVED_KEYWORDS):
