@@ -22,11 +22,17 @@ class SymbolTable():
 
         return self.symbol_table[identifier]
 
-    def set(self, identifier, value, var_type: VarType):
+    def set(self, identifier, value, var_type: VarType) -> None:
         variable = self.symbol_table[identifier]
         if variable is None:
             raise ValueError("Tenta mudar variável antes de declará-la")
         self.symbol_table[identifier] = (value, var_type)
+
+    def create_empty(self, identifier) -> None:
+        self.symbol_table[identifier] = None
+    
+    def create(self, identifier, value) -> None:
+        self.symbol_table[identifier] = value
 
     def get_table(self):
         return self.symbol_table
@@ -97,7 +103,7 @@ class BinOp(Node):
             elif self.value == '&&':
                 return_value = left_term_value and right_term_value
                 return (int(return_value), return_type)
-        
+
         elif self.value in RELATIONAL_OPERATORS:
             return_type = VarType.INT
             if self.value == '==':
@@ -109,7 +115,7 @@ class BinOp(Node):
             elif self.value == '<':
                 return_value = left_term_value < right_term_value
                 return (int(return_value), return_type)
-        
+
         elif self.value == '.':
             return_type = VarType.STRING
             return_value = left_term_type + right_term_type
@@ -250,6 +256,25 @@ class Assignment(Node):
         ast_result = self.children[1].evaluate(symbol_table)
         symbol_table.set(identifier=variable, value=ast_result)
 
+
+class VarDec(Node):
+    '''
+    Variable Declaration - Adiciona uma variável à SymbolTable
+
+    value: None
+
+    children: Pode ter 1 ou 2
+     - children[0] -> identifier
+     - children[1] -> boolExpression
+    '''
+
+    def evaluate(self, symbol_table: SymbolTable) -> None:
+        identifier = self.children[0]
+        if len(self.children == 1):
+            SymbolTable.create_empty(symbol_table, identifier=identifier)
+        elif len(self.children == 2):
+            value = self.children[1].evaluate(symbol_table)
+            SymbolTable.create(symbol_table, identifier, value)
 
 class Scanln(Node):
     '''
