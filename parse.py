@@ -164,16 +164,16 @@ class Parser:
         while Parser.tokenizer.next.type == tokens.TokenType.FIRST_ORDER_OPERATIONS:
             if Parser.tokenizer.next.value == '-':
                 Parser.tokenizer.select_next()
-                children = Parser.parse_term()
-                term = nodes.BinOp(value='-', children=[term, children])
+                other_term = Parser.parse_term()
+                term = nodes.BinOp(value='-', children=[term, other_term])
             elif Parser.tokenizer.next.value == '+':
                 Parser.tokenizer.select_next()
-                children = Parser.parse_term()
-                term = nodes.BinOp(value='+', children=[term, children])
+                other_term = Parser.parse_term()
+                term = nodes.BinOp(value='+', children=[term, other_term])
             elif Parser.tokenizer.next.value == '.':
                 Parser.tokenizer.select_next()
-                children = Parser.parse_term()
-                term = nodes.BinOp(value='.', children=[term, children])
+                other_term = Parser.parse_term()
+                term = nodes.BinOp(value='.', children=[term, other_term])
         return term
 
     @staticmethod
@@ -182,12 +182,12 @@ class Parser:
         while Parser.tokenizer.next.type == tokens.TokenType.SECOND_ORDER_OPERATIONS:
             if Parser.tokenizer.next.value == '*':
                 Parser.tokenizer.select_next()
-                children = Parser.parse_factor()
-                factor = nodes.BinOp(value='*', children=[factor, children])
+                other_factor = Parser.parse_factor()
+                factor = nodes.BinOp(value='*', children=[factor, other_factor])
             elif Parser.tokenizer.next.value == '/':
                 Parser.tokenizer.select_next()
-                children = Parser.parse_factor()
-                factor = nodes.BinOp(value='/', children=[factor, children])
+                other_factor = Parser.parse_factor()
+                factor = nodes.BinOp(value='/', children=[factor, other_factor])
         return factor
 
     @staticmethod

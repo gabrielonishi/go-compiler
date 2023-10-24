@@ -4,13 +4,18 @@ import nodes, tokens, parse
 
 if __name__ == '__main__':
 
-    if(len(sys.argv) == 1):
-        raise ValueError("ERRO: É necessário mandar um arquivo com extensão .go para compilar!")
-    
-    file = sys.argv[1]
-    extension = file.split(".")[1]
-    if extension != "go":
-        raise ValueError("ERRO: O arquivo compilado deve ter extensão .go!")
+    debug = False
+    file = ''
+    if debug:
+        file = "entrada.go"
+    else:
+        if(len(sys.argv) == 1):
+            raise ValueError("ERRO: É necessário mandar um arquivo com extensão .go para compilar!")
+        
+        file = sys.argv[1]
+        extension = file.split(".")[1]
+        if extension != "go":
+            raise ValueError("ERRO: O arquivo compilado deve ter extensão .go!")
 
     with open(file=file, mode="r") as f:
         code = f.read()

@@ -29,7 +29,7 @@ class SymbolTable():
 
     def create_empty(self, identifier) -> None:
         self.symbol_table[identifier] = None
-    
+
     def create(self, identifier, value) -> None:
         self.symbol_table[identifier] = value
 
@@ -69,12 +69,11 @@ class BinOp(Node):
     '''
 
     def evaluate(self, symbol_table: SymbolTable) -> tuple:
-        left_term_value, left_term_type = self.children[0].evaluate(
-            symbol_table)
-        right_term_value, right_term_type = self.children[1].evaluate(
-            symbol_table)
 
-        ARITHIMETIC_OPERATORS = ['+, -, *, /']
+        left_term_value, left_term_type = self.children[0].evaluate(symbol_table)
+        right_term_value, right_term_type = self.children[1].evaluate(symbol_table)
+        
+        ARITHIMETIC_OPERATORS = ['+' , '-', '*', '/']
         BOOLEAN_OPERATORS = ['||', '&&']
         RELATIONAL_OPERATORS = ['>', '<', '==']
 
@@ -119,9 +118,10 @@ class BinOp(Node):
 
         elif self.value == '.':
             return_type = VarType.STRING
-            return_value = left_term_value + right_term_value
+            return_value = str(left_term_value) + str(right_term_value)
             return (return_value, return_type)
-
+        else:
+            raise ValueError("Erro fudeu")
 
 class UnOp(Node):
     '''
@@ -255,8 +255,10 @@ class Assignment(Node):
 
     def evaluate(self, symbol_table: SymbolTable) -> tuple:
         variable = self.children[0].value
-        ast_result_value, ast_type_value = self.children[1].evaluate(symbol_table)
-        symbol_table.set(identifier=variable, value=ast_result_value, var_type= ast_type_value)
+        ast_result_value, ast_type_value = self.children[1].evaluate(
+            symbol_table)
+        symbol_table.set(identifier=variable,
+                         value=ast_result_value, var_type=ast_type_value)
 
 
 class VarDec(Node):
@@ -274,9 +276,10 @@ class VarDec(Node):
         identifier = self.children[0]
         if len(self.children) == 1:
             SymbolTable.create_empty(symbol_table, identifier=identifier)
-        elif len(self.children == 2):
+        elif len(self.children) == 2:
             value = self.children[1].evaluate(symbol_table)
             SymbolTable.create(symbol_table, identifier, value)
+
 
 class Scanln(Node):
     '''
@@ -328,6 +331,6 @@ class For(Node):
 
     def evaluate(self, symbol_table: SymbolTable) -> tuple:
         self.children[0].evaluate(symbol_table)
-        while (self.children[1].evaluate(symbol_table)):
+        while (self.children[1].evaluate(symbol_table) == 1):
             self.children[3].evaluate(symbol_table)
             self.children[2].evaluate(symbol_table)
