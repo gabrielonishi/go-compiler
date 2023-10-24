@@ -75,6 +75,7 @@ class TokenType(Enum):
     STRING = auto()
     VAR_DECLARATION = auto()
     VAR_TYPE = auto()
+    CONCATENATE = auto()
 
 class Token:
     '''
@@ -94,23 +95,26 @@ class Tokenizer:
     '''
 
     OPERATORS = ['-', '+', '*', '/',
-                 '(', ')', '=', '\n', '&', '|', '>', '<', '!', '{', '}', ';']
-    RESERVED_KEYWORDS = ['Println', 'Scanln', 'if', 'else', 'for', 'var', 'string', 'int']
+                 '(', ')', '=', '\n', '&', '|', '>', '<', '!', '{', '}', ';', '.']
+    RESERVED_KEYWORDS = ['Println', 'Scanln', 'if',
+                         'else', 'for', 'var', 'string', 'int']
 
     def __init__(self, source: str) -> None:
         self.source = source
         self.position = 0
         self.next = None
 
-    def handle_operators(self, next_character : str ) -> None:
+    def handle_operators(self, next_character: str) -> None:
         if next_character == '-':
             self.next = Token(value='-', type=TokenType.FIRST_ORDER_OPERATIONS)
         elif next_character == '+':
             self.next = Token(value='+', type=TokenType.FIRST_ORDER_OPERATIONS)
         elif next_character == '*':
-            self.next = Token(value='*', type=TokenType.SECOND_ORDER_OPERATIONS)
+            self.next = Token(
+                value='*', type=TokenType.SECOND_ORDER_OPERATIONS)
         elif next_character == '/':
-            self.next = Token(value='/', type=TokenType.SECOND_ORDER_OPERATIONS)
+            self.next = Token(
+                value='/', type=TokenType.SECOND_ORDER_OPERATIONS)
         elif next_character == '(':
             self.next = Token(value='(', type=TokenType.PARENTHESIS)
         elif next_character == ')':
@@ -129,9 +133,12 @@ class Tokenizer:
             self.next = Token(value='}', type=TokenType.BRACKETS)
         elif next_character == ';':
             self.next = Token(value=';', type=TokenType.SEMICOLON)
+        elif next_character == '.':
+            self.next = Token(value='.', type=TokenType.CONCATENATE)
         elif next_character == '=':
             if self.source[self.position + 1] == '=':
-                self.next = Token(value='==', type=TokenType.NUMERIC_COMPARISON)
+                self.next = Token(
+                    value='==', type=TokenType.NUMERIC_COMPARISON)
                 self.position += 1
             else:
                 self.next = Token(value='=', type=TokenType.ATTRIBUTE)
@@ -150,8 +157,8 @@ class Tokenizer:
                 raise ValueError(
                     "ERRO EM Tokenizer.select_next(): '|' não é um operador válido. Você quis dizer '||'?")
         self.position += 1
-    
-    def handle_reserved_keywords(self, this_identifier : str ) -> None:
+
+    def handle_reserved_keywords(self, this_identifier: str) -> None:
         if this_identifier == 'Println':
             self.next = Token(value='Println', type=TokenType.PRINT)
         elif this_identifier == 'Scanln':
@@ -165,7 +172,7 @@ class Tokenizer:
         elif this_identifier == 'var':
             self.next = Token(value='var', type=TokenType.VAR_DECLARATION)
         elif this_identifier == 'string':
-            self.next = Token(value='string', type= TokenType.VAR_TYPE)
+            self.next = Token(value='string', type=TokenType.VAR_TYPE)
         elif this_identifier == 'int':
             self.next = Token(value='int', type=TokenType.VAR_TYPE)
 
@@ -196,7 +203,8 @@ class Tokenizer:
                 this_identifier += self.source[self.position]
                 self.position += 1
             if (this_identifier in Tokenizer.RESERVED_KEYWORDS):
-                self.handle_reserved_keywords(self, this_identifier=this_identifier)
+                self.handle_reserved_keywords(
+                    self, this_identifier=this_identifier)
             else:
                 self.next = Token(value=this_identifier,
                                   type=TokenType.IDENTIFIER)
