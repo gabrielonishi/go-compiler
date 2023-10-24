@@ -64,7 +64,9 @@ class BinOp(Node):
 
     value: None
 
-    children: 2 (children[0] operação children[1])
+    children: 2 
+     - children[0]: termo 1
+     - children[1]: termo 2
     '''
 
     def evaluate(self, symbol_table: SymbolTable) -> tuple:

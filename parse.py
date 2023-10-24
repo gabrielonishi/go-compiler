@@ -172,6 +172,10 @@ class Parser:
                 Parser.tokenizer.select_next()
                 children = Parser.parse_term()
                 term = nodes.BinOp(value='+', children=[term, children])
+            elif Parser.tokenizer.next.value == '.':
+                Parser.tokenizer.select_next()
+                children = Parser.parse_term()
+                term = nodes.BinOp(value='.', children=[term, children])
         return term
 
     @staticmethod
