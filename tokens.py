@@ -75,7 +75,6 @@ class TokenType(Enum):
     STRING = auto()
     VAR_DECLARATION = auto()
     VAR_TYPE = auto()
-    CONCATENATE = auto()
 
 
 class Token:
@@ -135,7 +134,7 @@ class Tokenizer:
         elif next_character == ';':
             self.next = Token(value=';', type=TokenType.SEMICOLON)
         elif next_character == '.':
-            self.next = Token(value='.', type=TokenType.CONCATENATE)
+            self.next = Token(value='.', type=TokenType.FIRST_ORDER_OPERATIONS)
         elif next_character == '=':
             if self.source[self.position + 1] == '=':
                 self.next = Token(
