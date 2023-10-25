@@ -89,16 +89,18 @@ class Parser:
             if Parser.tokenizer.next.type != tokens.TokenType.IDENTIFIER:
                 raise ValueError("Erro em parse.parse_statement(): É necessário identifier depois de 'var'")
             identifier = Parser.tokenizer.next.value
+            identifier_node = nodes.Identifier(value=identifier, children=[])
             Parser.tokenizer.select_next()
             if Parser.tokenizer.next.type != tokens.TokenType.VAR_TYPE:
                 raise ValueError("Erro em parse.parse_statement(): É necessário especificar tipo ao criar variável")
+            var_type = Parser.tokenizer.next.value
             Parser.tokenizer.select_next()
             if Parser.tokenizer.next.type == tokens.TokenType.ATTRIBUTE:
                 Parser.tokenizer.select_next()
                 bool_expression = Parser.parse_bool_expression()
-                statement = nodes.VarDec(value=None, children=[identifier, bool_expression])
+                statement = nodes.VarDec(value=var_type, children=[identifier_node, bool_expression])
             else:
-                statement = nodes.VarDec(value=None, children=[identifier])
+                statement = nodes.VarDec(value=var_type, children=[identifier_node])
         else:
             statement = Parser.assign()
         if Parser.tokenizer.next.type == tokens.TokenType.LINEFEED:
@@ -250,14 +252,14 @@ class Parser:
             raise ValueError(
                 'ERRO EM Parser.assign(): Próximo token deveria ser um identifier, mas não é')
         variable = Parser.tokenizer.next.value
-        identifier = nodes.Identifier(value=variable, children=[])
+        identifier_node = nodes.Identifier(value=variable, children=[])
         Parser.tokenizer.select_next()
         if Parser.tokenizer.next.type != tokens.TokenType.ATTRIBUTE:
             raise ValueError(
                 'ERRO EM Parser.assign(): Não passou um operador "="')
         Parser.tokenizer.select_next()
         bool_expression = Parser.parse_bool_expression()
-        return nodes.Assignment(value=None, children=[identifier, bool_expression])
+        return nodes.Assignment(value=None, children=[identifier_node, bool_expression])
 
     @staticmethod
     def run(code: str) -> nodes.Node:

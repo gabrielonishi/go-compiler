@@ -1,6 +1,6 @@
 import typing
 from enum import Enum, auto
-
+from nodes import VarType
 
 class PrePro():
     '''
@@ -174,9 +174,9 @@ class Tokenizer:
         elif key_word == 'var':
             self.next = Token(value='var', type=TokenType.VAR_DECLARATION)
         elif key_word == 'string':
-            self.next = Token(value='string', type=TokenType.VAR_TYPE)
+            self.next = Token(value=VarType.STRING, type=TokenType.VAR_TYPE)
         elif key_word == 'int':
-            self.next = Token(value='int', type=TokenType.VAR_TYPE)
+            self.next = Token(value=VarType.INT, type=TokenType.VAR_TYPE)
 
     def select_next(self) -> None:
         '''Lê o próximo token e atualiza o atributo next'''
