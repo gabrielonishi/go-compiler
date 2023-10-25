@@ -362,7 +362,10 @@ class For(Node):
     '''
 
     def evaluate(self, symbol_table: SymbolTable) -> tuple:
+        # Atualiza symbol table
         self.children[0].evaluate(symbol_table)
-        while (self.children[1].evaluate(symbol_table) == 1):
+        while (self.children[1].evaluate(symbol_table) == (1, VarType.INT)):
+            print('entra')
+            # print(self.children[3].evaluate(symbol_table))
             self.children[3].evaluate(symbol_table)
             self.children[2].evaluate(symbol_table)
