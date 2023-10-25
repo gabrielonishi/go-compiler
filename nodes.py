@@ -365,7 +365,6 @@ class For(Node):
         # Atualiza symbol table
         self.children[0].evaluate(symbol_table)
         while (self.children[1].evaluate(symbol_table) == (1, VarType.INT)):
-            print('entra')
             # print(self.children[3].evaluate(symbol_table))
             self.children[3].evaluate(symbol_table)
             self.children[2].evaluate(symbol_table)
