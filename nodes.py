@@ -369,9 +369,9 @@ class If(Node):
     value: None
 
     children: 2 ou 3
-     - children[0] -> condicional
-     - children[1] -> bloco a ser executado se true
-     - children[2] -> bloco a ser executado no else (opcional)
+     - children[0] -> nó com bool_expression da condicional
+     - children[1] -> nó Block a ser executado se true
+     - children[2] -> nó Block a ser executado no else (opcional)
     '''
 
     def evaluate(self, symbol_table: SymbolTable) -> tuple:
@@ -391,16 +391,22 @@ class For(Node):
     value: None
 
     children: 4
-     - children[0] -> variável de iteração
-     - children[1] -> condição
-     - children[2] -> incremento
-     - children[3] -> bloco
+     - children[0] -> nó com bool_expression da variável de iteração
+     - children[1] -> nó com bool_expression da condição
+     - children[2] -> nó com bool_expression de incremento
+     - children[3] -> nó Block a ser executado se true
     '''
 
     def evaluate(self, symbol_table: SymbolTable) -> tuple:
+        iteration_node = self.children[0]
+        condition_node = self.children[1]
+        increment_node = self.children[2]
+        block_node = self.children[3]
         # Atualiza symbol table
-        self.children[0].evaluate(symbol_table)
-        while (self.children[1].evaluate(symbol_table) == (1, VarType.INT)):
-            # print(self.children[3].evaluate(symbol_table))
-            self.children[3].evaluate(symbol_table)
-            self.children[2].evaluate(symbol_table)
+        iteration_node.evaluate(symbol_table)
+        # Toda vez que entrar no while, tem que reavaliar condição
+        while (condition_node.evaluate(symbol_table) == (1, VarType.INT)):
+            # Executar nó block
+            block_node.evaluate(symbol_table)
+            # Incrementar variável
+            increment_node.evaluate(symbol_table)
