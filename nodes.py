@@ -78,9 +78,13 @@ class SymbolTable():
         Instancia variável na symbol table quando o valor é passado. Varipavel não
         pode ter sido declarada antes no código.
         Ocorre quando temos algo no código .go como: `var x string = 5`
-
+        
+        Argumentos:
+         - identifier(str): identificador (Identifier.value, NÃO um nó Identifier)
+         - variable(tuple): tupla representando a variável -> variable = (variable_value, variable_type)
+         - declared_var_type(VarType): tipo da variável especificada
         '''
-        variable_value, variable_type = variable
+        _ , variable_type = variable
         if variable_type != declared_var_type:
             raise ValueError(
                 "Tipo declarado da variável é diferente do tipo da variável")
