@@ -110,14 +110,15 @@ class Node():
     def __init__(self, value, children: list):
         self.value = value
         self.children = children
+        self.id = Node.newId()
 
     def evaluate(self, symbol_table: SymbolTable) -> tuple:
         pass
 
     @staticmethod
     def newId():
-        i += 1
-        return i
+        Node.i += 1
+        return Node.i
 
 class BinOp(Node):
     '''
