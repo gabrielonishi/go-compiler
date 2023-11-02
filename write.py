@@ -4,12 +4,14 @@ class ProgramWriter():
     arquivo assembly
     '''
     
-    PROGRAM_NAME = "program.txt"
-    is_new_file = True
+    program_name = "program.txt"
+    
+    @staticmethod
+    def set_program_name(new_program_name:str):
+        ProgramWriter.program_name = new_program_name
 
     @staticmethod
     def erase_document():
-        ProgramWriter.is_new_file = False
         with open(ProgramWriter.PROGRAM_NAME, "w"):
             pass
 
