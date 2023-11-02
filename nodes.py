@@ -51,7 +51,7 @@ class SymbolTable():
         '''
         if identifier not in list(self.symbol_table.keys()):
             raise ValueError("Tenta mudar variável antes de declará-la")
-        last_value, last_type = self.symbol_table[identifier]
+        _, last_type = self.symbol_table[identifier]
 
         if last_type != var_type:
             raise ValueError("Tenta mudar tipo de variável")
