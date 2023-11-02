@@ -139,6 +139,12 @@ class BinOp(Node):
             symbol_table)
         right_term_value, right_term_type = self.children[1].evaluate(
             symbol_table)
+        
+        write.ProgramWriter
+        write.ProgramWriter.write_line(f"MOV EAX, {right_term_value}")
+        write.ProgramWriter.write_line(f"PUSH EAX")
+        write.ProgramWriter.write_line(f"MOV EAX")
+        write.ProgramWriter.write_line(f"")
 
         ARITHIMETIC_OPERATORS = ['+', '-', '*', '/']
         BOOLEAN_OPERATORS = ['||', '&&']

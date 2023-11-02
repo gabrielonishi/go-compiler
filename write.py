@@ -8,11 +8,15 @@ class ProgramWriter():
     is_new_file = True
 
     @staticmethod
+    def erase_document():
+        ProgramWriter.is_new_file = False
+        with open(ProgramWriter.PROGRAM_NAME, "w"):
+            pass
+
+    @staticmethod
     def write_line(code:str):
         if(ProgramWriter.is_new_file):
-            ProgramWriter.is_new_file = False
-            with open(ProgramWriter.PROGRAM_NAME, "w"):
-                pass
+            ProgramWriter.erase_document()
 
         with open(ProgramWriter.PROGRAM_NAME, "a") as file:
             file.write(code)
