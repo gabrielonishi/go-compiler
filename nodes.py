@@ -1,4 +1,5 @@
 from enum import Enum, auto
+import write
 
 
 class VarType(Enum):
@@ -78,13 +79,13 @@ class SymbolTable():
         Instancia variável na symbol table quando o valor é passado. Varipavel não
         pode ter sido declarada antes no código.
         Ocorre quando temos algo no código .go como: `var x string = 5`
-        
+
         Argumentos:
          - identifier(str): identificador (Identifier.value, NÃO um nó Identifier)
          - variable(tuple): tupla representando a variável -> variable = (variable_value, variable_type)
          - declared_var_type(VarType): tipo da variável especificada
         '''
-        _ , variable_type = variable
+        _, variable_type = variable
         if variable_type != declared_var_type:
             raise ValueError(
                 "Tipo declarado da variável é diferente do tipo da variável")
@@ -119,6 +120,7 @@ class Node():
     def newId():
         Node.i += 1
         return Node.i
+
 
 class BinOp(Node):
     '''
@@ -243,7 +245,12 @@ class IntVal(Node):
     '''
 
     def evaluate(self, symbol_table: SymbolTable) -> tuple:
-        return (self.value, VarType.INT)
+        '''
+        Retorna o valor no registrador EAX
+        '''
+        assembly_code = f'MOV EAX, {self.value} ; Evaluate do IntVal'
+        write.ProgramWriter.write_program(code=assembly_code)
+        # return (self.value, VarType.INT)
 
 
 class StringVal(Node):
