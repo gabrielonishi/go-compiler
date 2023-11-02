@@ -98,10 +98,14 @@ class Node():
     Atributos:
      - value: varia de nó para nó
      - children: lista de nós
+     - i: atributo estático que serve como índice do nó
 
     Métodos: 
-     - Evaluate(): varia de nó para nó
+     - evaluate(): varia de nó para nó
+     - newId(): método estático que atualiza o Id do nó
     '''
+
+    i = 0
 
     def __init__(self, value, children: list):
         self.value = value
@@ -110,6 +114,10 @@ class Node():
     def evaluate(self, symbol_table: SymbolTable) -> tuple:
         pass
 
+    @staticmethod
+    def newId():
+        i += 1
+        return i
 
 class BinOp(Node):
     '''
