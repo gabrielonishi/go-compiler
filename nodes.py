@@ -50,7 +50,7 @@ class SymbolTable():
          - value: valor a ser colocado na symbol table
          - var_type (VarType): tipo da variável
         '''
-        if identifier not in list(self.symbol_table.keys()):
+        if identifier not in self.symbol_table:
             raise ValueError("Tenta mudar variável antes de declará-la")
         _, last_type = self.symbol_table[identifier]
 
@@ -250,7 +250,7 @@ class IntVal(Node):
         '''
         assembly_code = f'MOV EAX, {self.value} ; Evaluate do IntVal'
         write.ProgramWriter.write_program(code=assembly_code)
-        # return (self.value, VarType.INT)
+        return (self.value, VarType.INT)
 
 
 class StringVal(Node):
