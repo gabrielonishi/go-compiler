@@ -10,15 +10,22 @@ class VarType(Enum):
 class SymbolTable():
     '''
     Serve como memória do compilador, associando idenitfier à
-    variáveis
+    variáveis na forma de tupla
+
+    variável = (value, type, ebp_distance), em que:
+     - value: valor da variável
+     - type: tipo da variável, segundo classe VarType
+     - ebp_distance: distância da base da pilha
 
     self.symbol_table = 
     {
-        identifier1 = (value, type), 
-        identifier2 = (value, type),
+        identifier1 = (value1, type1, ebp_distance1), 
+        identifier2 = (value2, type2, ebp_distance2),
         ...
     }
     '''
+
+    current_ebp_distance = 0
 
     def __init__(self) -> None:
         self.symbol_table = {}
@@ -49,12 +56,12 @@ class SymbolTable():
         '''
         if identifier not in self.symbol_table:
             raise ValueError("Tenta mudar variável antes de declará-la")
-        _, last_type = self.symbol_table[identifier]
+        last_value, last_type, ebp_distance = self.symbol_table[identifier]
 
         if last_type != var_type:
             raise ValueError("Tenta mudar tipo de variável")
 
-        self.symbol_table[identifier] = (value, var_type)
+        self.symbol_table[identifier] = (value, var_type, ebp_distance)
 
     def create_empty(self, identifier: str, declared_var_type: VarType) -> None:
         '''
@@ -68,8 +75,10 @@ class SymbolTable():
         '''
         if identifier in self.symbol_table:
             raise ValueError("Não se pode criar um mesmo identifier 2 vezes")
+        
+        ebp_distance = SymbolTable.update_EBP_distance()
 
-        self.symbol_table[identifier] = (None, declared_var_type)
+        self.symbol_table[identifier] = (None, declared_var_type, ebp_distance)
 
     def create(self, identifier: str, variable: tuple, declared_var_type: VarType) -> None:
         '''
@@ -82,8 +91,17 @@ class SymbolTable():
          - variable(tuple): tupla representando a variável -> variable = (variable_value, variable_type)
          - declared_var_type(VarType): tipo da variável especificada
         '''
-        _, variable_type = variable
+
+        variable_value, variable_type = variable
+        ebp_distance = SymbolTable.update_EBP_distance()
+
         if variable_type != declared_var_type:
             raise ValueError(
                 "Tipo declarado da variável é diferente do tipo da variável")
-        self.symbol_table[identifier] = variable
+        self.symbol_table[identifier] = (variable_value, variable_type, ebp_distance)
+
+    @staticmethod
+    def update_ebp_distance():
+        # Valor fixo em 4 por que só usamos ariáveis de tamanho DWORD
+        SymbolTable.current_ebp_distance += 4
+        return SymbolTable.current_ebp_distance
