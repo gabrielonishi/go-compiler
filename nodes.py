@@ -1,6 +1,7 @@
 from symbol_table import SymbolTable, VarType
 import write
 
+
 class Node():
     '''
     Classe base para nós representando operações
@@ -43,17 +44,13 @@ class BinOp(Node):
     '''
 
     def evaluate(self, symbol_table: SymbolTable) -> tuple:
+        right_term_value, right_term_type = self.children[1].evaluate(
+            symbol_table)
+        write.ProgramWriter.write_line("PUSH EAX")
 
         left_term_value, left_term_type = self.children[0].evaluate(
             symbol_table)
-        right_term_value, right_term_type = self.children[1].evaluate(
-            symbol_table)
-        
-        write.ProgramWriter
-        write.ProgramWriter.write_line(f"MOV EAX, {right_term_value}")
-        write.ProgramWriter.write_line(f"PUSH EAX")
-        write.ProgramWriter.write_line(f"MOV EAX")
-        write.ProgramWriter.write_line(f"")
+        write.ProgramWriter.write_line("POP EBX")
 
         ARITHIMETIC_OPERATORS = ['+', '-', '*', '/']
         BOOLEAN_OPERATORS = ['||', '&&']
@@ -65,15 +62,19 @@ class BinOp(Node):
                     "Erro em nodes.BinOp.evaluate(): Não é possível fazer operações aritiméticas envolvendo strings")
             return_type = VarType.INT
             if self.value == '+':
+                write.ProgramWriter.write_line("ADD EAX, EBX")
                 return_value = left_term_value + right_term_value
                 return (return_value, return_type)
             elif self.value == '-':
+                write.ProgramWriter.write_line("SUB EAX, EBX")
                 return_value = left_term_value - right_term_value
                 return (return_value, return_type)
             elif self.value == '*':
+                write.ProgramWriter.write_line("IMUL EAX, EBX")
                 return_value = left_term_value * right_term_value
                 return (return_value, return_type)
             elif self.value == '/':
+                write.ProgramWriter.write_line("IDIV EAX, EBX")
                 return_value = left_term_value // right_term_value
                 return (return_value, return_type)
 
@@ -84,9 +85,11 @@ class BinOp(Node):
 
             return_type = VarType.INT
             if self.value == '||':
+                write.ProgramWriter.write_line("AND EAX, EBX")
                 return_value = left_term_value or right_term_value
                 return (int(return_value), return_type)
             elif self.value == '&&':
+                write.ProgramWriter.write_line("IMUL EAX, EBX")
                 return_value = left_term_value and right_term_value
                 return (int(return_value), return_type)
 
@@ -96,12 +99,18 @@ class BinOp(Node):
                     "Erro em nodes.BinOp.evaluate(): Não é possível fazer operações booleanas com tipos diferentes")
             return_type = VarType.INT
             if self.value == '==':
+                write.ProgramWriter.write_line("CMP EAX, EBX")
+                write.ProgramWriter.write_line("CALL binop_je")
                 return_value = left_term_value == right_term_value
                 return (int(return_value), return_type)
             elif self.value == '>':
+                write.ProgramWriter.write_line("CMP EAX, EBX")
+                write.ProgramWriter.write_line("CALL binop_jg")
                 return_value = left_term_value > right_term_value
                 return (int(return_value), return_type)
             elif self.value == '<':
+                write.ProgramWriter.write_line("CMP EAX, EBX")
+                write.ProgramWriter.write_line("CALL binop_jl")
                 return_value = left_term_value < right_term_value
                 return (int(return_value), return_type)
 
@@ -110,7 +119,7 @@ class BinOp(Node):
             return_value = str(left_term_value) + str(right_term_value)
             return (return_value, return_type)
         else:
-            raise ValueError("Erro fudeu")
+            raise ValueError("Erro: operação não definida")
 
 
 class UnOp(Node):

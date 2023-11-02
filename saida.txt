@@ -1,2 +1,0 @@
-MOV EAX, 1
-MOV EAX, 2

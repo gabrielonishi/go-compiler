@@ -1,2 +1,0 @@
-MOV EAX, 1 ; Evaluate do IntVal
-MOV EAX, 2 ; Evaluate do IntVal
