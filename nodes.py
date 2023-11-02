@@ -248,8 +248,8 @@ class IntVal(Node):
         '''
         Retorna o valor no registrador EAX
         '''
-        assembly_code = f'MOV EAX, {self.value} ; Evaluate do IntVal'
-        write.ProgramWriter.write_program(code=assembly_code)
+        assembly_code = f'MOV EAX, {self.value}'
+        write.ProgramWriter.write_line(code=assembly_code)
         return (self.value, VarType.INT)
 
 

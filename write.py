@@ -8,7 +8,7 @@ class ProgramWriter():
     is_new_file = True
 
     @staticmethod
-    def write_program(code:str):
+    def write_line(code:str):
         if(ProgramWriter.is_new_file):
             ProgramWriter.is_new_file = False
             with open(ProgramWriter.PROGRAM_NAME, "w"):
@@ -16,3 +16,4 @@ class ProgramWriter():
 
         with open(ProgramWriter.PROGRAM_NAME, "a") as file:
             file.write(code)
+            file.write("\n")
