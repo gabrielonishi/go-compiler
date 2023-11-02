@@ -12,14 +12,11 @@ class ProgramWriter():
 
     @staticmethod
     def erase_document():
-        with open(ProgramWriter.PROGRAM_NAME, "w"):
+        with open(ProgramWriter.program_name, "w"):
             pass
 
     @staticmethod
     def write_line(code:str):
-        if(ProgramWriter.is_new_file):
-            ProgramWriter.erase_document()
-
-        with open(ProgramWriter.PROGRAM_NAME, "a") as file:
+        with open(ProgramWriter.program_name, "a") as file:
             file.write(code)
             file.write("\n")
