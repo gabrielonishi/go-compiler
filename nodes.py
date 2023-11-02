@@ -1,15 +1,5 @@
-from enum import Enum, auto
-from symbol_table import SymbolTable
+from symbol_table import SymbolTable, VarType
 import write
-
-
-class VarType(Enum):
-    '''
-    Armazena os tipos de dados possíveis até agora
-    '''
-    INT = auto()
-    STRING = auto()
-
 
 class Node():
     '''

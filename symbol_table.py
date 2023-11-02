@@ -1,3 +1,12 @@
+from enum import Enum, auto
+
+class VarType(Enum):
+    '''
+    Armazena os tipos de dados possíveis até agora
+    '''
+    INT = auto()
+    STRING = auto()
+
 class SymbolTable():
     '''
     Serve como memória do compilador, associando idenitfier à
