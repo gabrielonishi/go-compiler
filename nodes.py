@@ -353,13 +353,22 @@ class If(Node):
     '''
 
     def evaluate(self, symbol_table: SymbolTable) -> tuple:
-        condition = self.children[0]
+        condition_node = self.children[0]
         true_block = self.children[1]
-        if condition.evaluate(symbol_table):
+
+        condition_result = condition_node.evaluate(symbol_table)
+        write.ProgramWriter.write_line(f"CMP EAX, False ; If.evaluate()")
+        write.ProgramWriter.write_line(f"JE ELSE_{self.i} ; If.evaluate()")
+
+        if condition_result:
             true_block.evaluate(symbol_table)
+            write.ProgramWriter.write_line(f"JMP EXIT_{self.i} ; If.evaluate()")
         elif len(self.children) == 3:
+            write.ProgramWriter.write_line(f"ELSE_{self.i} ; If.evaluate()")
             else_block = self.children[2]
             else_block.evaluate(symbol_table)
+
+        write.ProgramWriter.write_line(f"EXIT_{self.i} ; If.evaluate()")
 
 
 class For(Node):
