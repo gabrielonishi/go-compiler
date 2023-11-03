@@ -1,3 +1,4 @@
 var x int
-x = 3
-x = 5
+var y int
+x = 10
+y = x - 5
