@@ -389,11 +389,24 @@ class For(Node):
         condition_node = self.children[1]
         increment_node = self.children[2]
         block_node = self.children[3]
+
+        write.ProgramWriter.write_line("; For begin")
+
         # Atualiza symbol table
         iteration_node.evaluate(symbol_table)
+
+        write.ProgramWriter.write_line(f"FOR_{self.i}; For.evaluate()")
+        
+        condition_result = condition_node.evaluate(symbol_table)
+        write.ProgramWriter.write_line("CMP EAX, False; ; For.evaluate()")
+        write.ProgramWriter.write_line(f"JE EXIT_{self.i} ; For.evaluate()")
+
         # Toda vez que entrar no while, tem que reavaliar condição
-        while (condition_node.evaluate(symbol_table) == (1, VarType.INT)):
+        while condition_result == (1, VarType.INT):
             # Executar nó block
             block_node.evaluate(symbol_table)
             # Incrementar variável
             increment_node.evaluate(symbol_table)
+        
+        write.ProgramWriter.write_line(f"JMP FOR_{self.i}")
+        write.ProgramWriter.write_line(f"EXIT_{self.i} ; For.evaluate()")
