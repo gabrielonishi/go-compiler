@@ -218,7 +218,9 @@ class Identifier(Node):
     '''
 
     def evaluate(self, symbol_table: SymbolTable) -> tuple:
-        return symbol_table.get_by_identifier(identifier=self.value)
+        var_value, var_type, var_position = symbol_table.get_by_identifier(identifier=self.value)
+        write.ProgramWriter.write_line(f"MOV EAX, [EBP-{var_position}] ; Identifier.evaluate() da variável {self.value}")
+        return (var_value, var_type)
 
 
 class Print(Node):
@@ -279,9 +281,11 @@ class Assignment(Node):
         variable = self.children[0].value
         ast_result_value, ast_type_value = self.children[1].evaluate(
             symbol_table)
-        symbol_table.set_by_identifier(identifier=variable,
-                                       value=ast_result_value, var_type=ast_type_value)
+        position = symbol_table.set_by_identifier(identifier=variable,
+                                                  value=ast_result_value,
+                                                  var_type=ast_type_value)
 
+        write.ProgramWriter.write_line(f"MOV [EBP - {position}], EAX")
 
 class VarDec(Node):
     '''
@@ -298,13 +302,19 @@ class VarDec(Node):
         identifier_node = self.children[0]
         identifier = identifier_node.value
         declared_var_type = self.value
+
+        write.ProgramWriter.write_line(
+            f"PUSH DWORD 0 ; VarDec.evaluate() (alocação da variável {identifier} na pilha)")
+
         if len(self.children) == 1:
             SymbolTable.create_empty(
                 symbol_table, identifier=identifier, declared_var_type=declared_var_type)
         elif len(self.children) == 2:
-            variable = self.children[1].evaluate(symbol_table)
-            SymbolTable.create(symbol_table, identifier=identifier, variable=variable,
-                               declared_var_type=declared_var_type)
+            var_value, var_type = self.children[1].evaluate(symbol_table)
+            position = SymbolTable.create(symbol_table, identifier=identifier, variable=(var_value, var_type),
+                                          declared_var_type=declared_var_type)
+            write.ProgramWriter.write_line(
+                f"MOV [EBP-{position}], EAX; VarDec.evaluate() (alocação do valor {var_value})")
 
 
 class Scanln(Node):
