@@ -42,7 +42,8 @@ class SymbolTable():
             raise ValueError(
                 f'ERRO EM SymbolTable: Variável {self.identifier} sem atribuição')
 
-        return self.symbol_table[identifier]
+        value, type, ebp_distance = self.symbol_table[identifier]
+        return (value, type)
 
     def set_by_identifier(self, identifier: str, value, var_type: VarType) -> None:
         '''

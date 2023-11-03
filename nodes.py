@@ -85,11 +85,11 @@ class BinOp(Node):
 
             return_type = VarType.INT
             if self.value == '||':
-                write.ProgramWriter.write_line("AND EAX, EBX")
+                write.ProgramWriter.write_line("OR EAX, EBX")
                 return_value = left_term_value or right_term_value
                 return (int(return_value), return_type)
             elif self.value == '&&':
-                write.ProgramWriter.write_line("IMUL EAX, EBX")
+                write.ProgramWriter.write_line("AND EAX, EBX")
                 return_value = left_term_value and right_term_value
                 return (int(return_value), return_type)
 
@@ -136,12 +136,15 @@ class UnOp(Node):
         term_value, term_type = self.children[0].evaluate(symbol_table)
 
         if self.value == '-':
+            write.ProgramWriter.write_line("NEG EAX")
             return_value = (-term_value, term_type)
             return return_value
         elif self.value == '+':
+            write.ProgramWriter.write_line("NOP")
             return_value = (term_value, term_type)
             return return_value
         elif self.value == '!':
+            write.ProgramWriter.write_line("NOT EAX")
             return_value = (not term_value, term_type)
             return return_value
 
