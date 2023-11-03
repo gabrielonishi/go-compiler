@@ -9,7 +9,7 @@ class ProgramWriter():
     FOOTER_DOC_NAME = "program_footer.txt"
 
     @staticmethod 
-    def start(output_program_name:str):
+    def start(output_program_name:str = "program.asm"):
         ProgramWriter.program_name = output_program_name
 
         with open(ProgramWriter.HEADER_DOC_NAME, "r") as header_file:
