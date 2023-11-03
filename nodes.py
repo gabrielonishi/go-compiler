@@ -62,19 +62,23 @@ class BinOp(Node):
                     "Erro em nodes.BinOp.evaluate(): Não é possível fazer operações aritiméticas envolvendo strings")
             return_type = VarType.INT
             if self.value == '+':
-                write.ProgramWriter.write_line("ADD EAX, EBX")
+                write.ProgramWriter.write_line(
+                    f"ADD EAX, EBX ; BinOp.evaluate() de {left_term_value, right_term_value}")
                 return_value = left_term_value + right_term_value
                 return (return_value, return_type)
             elif self.value == '-':
-                write.ProgramWriter.write_line("SUB EAX, EBX")
+                write.ProgramWriter.write_line(
+                    f"SUB EAX, EBX ; BinOp.evaluate() de {left_term_value, right_term_value}")
                 return_value = left_term_value - right_term_value
                 return (return_value, return_type)
             elif self.value == '*':
-                write.ProgramWriter.write_line("IMUL EAX, EBX")
+                write.ProgramWriter.write_line(
+                    f"IMUL EAX, EBX ; BinOp.evaluate() de {left_term_value, right_term_value}")
                 return_value = left_term_value * right_term_value
                 return (return_value, return_type)
             elif self.value == '/':
-                write.ProgramWriter.write_line("IDIV EAX, EBX")
+                write.ProgramWriter.write_line(
+                    f"IDIV EAX, EBX ; BinOp.evaluate() de {left_term_value, right_term_value}")
                 return_value = left_term_value // right_term_value
                 return (return_value, return_type)
 
@@ -85,11 +89,13 @@ class BinOp(Node):
 
             return_type = VarType.INT
             if self.value == '||':
-                write.ProgramWriter.write_line("OR EAX, EBX")
+                write.ProgramWriter.write_line(
+                    f"OR EAX, EBX ; BinOp.evaluate() de {left_term_value, right_term_value}")
                 return_value = left_term_value or right_term_value
                 return (int(return_value), return_type)
             elif self.value == '&&':
-                write.ProgramWriter.write_line("AND EAX, EBX")
+                write.ProgramWriter.write_line(
+                    f"AND EAX, EBX ; BinOp.evaluate() de {left_term_value, right_term_value}")
                 return_value = left_term_value and right_term_value
                 return (int(return_value), return_type)
 
@@ -99,18 +105,24 @@ class BinOp(Node):
                     "Erro em nodes.BinOp.evaluate(): Não é possível fazer operações booleanas com tipos diferentes")
             return_type = VarType.INT
             if self.value == '==':
-                write.ProgramWriter.write_line("CMP EAX, EBX")
-                write.ProgramWriter.write_line("CALL binop_je")
+                write.ProgramWriter.write_line(
+                    f"CMP EAX, EBX ; BinOp.evaluate() de {left_term_value, right_term_value}")
+                write.ProgramWriter.write_line(
+                    "CALL binop_je ; BinOp.evaluate()")
                 return_value = left_term_value == right_term_value
                 return (int(return_value), return_type)
             elif self.value == '>':
-                write.ProgramWriter.write_line("CMP EAX, EBX")
-                write.ProgramWriter.write_line("CALL binop_jg")
+                write.ProgramWriter.write_line(
+                    f"CMP EAX, EBX ; BinOp.evaluate() de {left_term_value, right_term_value}")
+                write.ProgramWriter.write_line(
+                    "CALL binop_jg ; BinOp.evaluate()")
                 return_value = left_term_value > right_term_value
                 return (int(return_value), return_type)
             elif self.value == '<':
-                write.ProgramWriter.write_line("CMP EAX, EBX")
-                write.ProgramWriter.write_line("CALL binop_jl")
+                write.ProgramWriter.write_line(
+                    f"CMP EAX, EBX ; BinOp.evaluate() de {left_term_value, right_term_value}")
+                write.ProgramWriter.write_line(
+                    "CALL binop_jl ; BinOp.evaluate()")
                 return_value = left_term_value < right_term_value
                 return (int(return_value), return_type)
 
@@ -136,15 +148,18 @@ class UnOp(Node):
         term_value, term_type = self.children[0].evaluate(symbol_table)
 
         if self.value == '-':
-            write.ProgramWriter.write_line("NEG EAX")
+            write.ProgramWriter.write_line(
+                f"NEG EAX ; UnOp.evaluate() do valor {term_value}")
             return_value = (-term_value, term_type)
             return return_value
         elif self.value == '+':
-            write.ProgramWriter.write_line("NOP")
+            write.ProgramWriter.write_line(
+                f"NOP ; UnOp.evaluate() do valor {term_value}")
             return_value = (term_value, term_type)
             return return_value
         elif self.value == '!':
-            write.ProgramWriter.write_line("NOT EAX")
+            write.ProgramWriter.write_line(
+                f"NOT EAX ; UnOp.evaluate() do valor {term_value}")
             return_value = (not term_value, term_type)
             return return_value
 
@@ -175,7 +190,7 @@ class IntVal(Node):
         '''
         Retorna o valor no registrador EAX
         '''
-        assembly_code = f'MOV EAX, {self.value}'
+        assembly_code = f'MOV EAX, {self.value} ; IntVal.evaluate()'
         write.ProgramWriter.write_line(code=assembly_code)
         return (self.value, VarType.INT)
 
