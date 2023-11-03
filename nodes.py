@@ -234,6 +234,10 @@ class Print(Node):
 
     def evaluate(self, symbol_table: SymbolTable) -> None:
         result_value, _ = self.children[0].evaluate(symbol_table)
+        write.ProgramWriter.write_line(f"PUSH EAX ; Print.evaluate()")
+        write.ProgramWriter.write_line(f"PUSH formatout ; Print.evaluate()")
+        write.ProgramWriter.write_line(f"CALL printf ; Print.evaluate()")
+        write.ProgramWriter.write_line(f"ADD ESP, 8 ; Print.evaluate()")
         print(result_value)
 
 
