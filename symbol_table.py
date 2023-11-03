@@ -80,7 +80,7 @@ class SymbolTable():
         if identifier in self.symbol_table:
             raise ValueError("Não se pode criar um mesmo identifier 2 vezes")
         
-        position = SymbolTable.update_EBP_distance()
+        position = SymbolTable.update_position()
 
         self.symbol_table[identifier] = (None, declared_var_type, position)
 
@@ -99,7 +99,7 @@ class SymbolTable():
         '''
 
         variable_value, variable_type = variable
-        position = SymbolTable.update_EBP_distance()
+        position = SymbolTable.update_position()
 
         if variable_type != declared_var_type:
             raise ValueError(

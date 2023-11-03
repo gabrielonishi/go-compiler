@@ -1,0 +1,5 @@
+PUSH DWORD 0 ; VarDec.evaluate() (alocação da variável x na pilha)
+MOV EAX, 3 ; IntVal.evaluate()
+MOV [EBP - 4], EAX
+MOV EAX, 5 ; IntVal.evaluate()
+MOV [EBP - 4], EAX
