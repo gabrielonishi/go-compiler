@@ -331,6 +331,12 @@ class Scanln(Node):
     '''
 
     def evaluate(self, symbol_table: SymbolTable) -> tuple:
+        write.ProgramWriter.write_line("PUSH scanint ; Scanln.evaluate()")
+        write.ProgramWriter.write_line("PUSH Formatin ; Scanln.evaluate")
+        write.ProgramWriter.write_line("call scanf ; Scanln.evaluate()")
+        write.ProgramWriter.write_line("ADD ESP, 8 ; Scanln.evaluate()")
+        write.ProgramWriter.write_line("MOV EAX, DWORD [scanint] ; Scanln.evaluate()")
+
         return (int(input()), VarType.INT)
 
 
