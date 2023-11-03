@@ -1,7 +1,7 @@
 # Arquivos de teste
 test.py
-saida.txt
-program.asm 
+*.asm
+*.go
 
 # Arquivo de compilação do vscode
 .vscode

@@ -5,16 +5,20 @@ import nodes, tokens, parse, write
 if __name__ == '__main__':
 
 
-    # if(len(sys.argv) != 3):
-    #     raise ValueError("É necessário enviar um arquivo de entrada e o nome do arquivo de saída")  
+    if(len(sys.argv) != 2):
+        raise ValueError("É necessário enviar um arquivo de entrada")  
           
-    file = sys.argv[1]
-    output_program_name = sys.argv[2]
+    filename = sys.argv[1].split('.')[0]
+    in_filename = filename + '.go'
+    out_filename = filename + '.asm'
 
-    with open(file=file, mode="r") as f:
-        code = f.read()
+    try:
+        with open(file=in_filename, mode="r") as f:
+            code = f.read()
+    except FileNotFoundError:
+        print("Arquivo enviado não existe")
 
-    write.ProgramWriter.start(output_program_name)
+    write.ProgramWriter.start(out_filename)
 
     clean_code = tokens.PrePro.filter(source=code)
     root = parse.Parser.run(clean_code)
