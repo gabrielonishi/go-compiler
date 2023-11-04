@@ -352,14 +352,14 @@ class If(Node):
      - children[2] -> nó Block a ser executado no else (opcional)
     '''
 
-    def evaluate(self, symbol_table: SymbolTable, first_time:bool = True) -> tuple:
+    def evaluate(self, symbol_table: SymbolTable) -> tuple:
         condition_node = self.children[0]
         true_block = self.children[1]
 
         condition_result = condition_node.evaluate(symbol_table)
 
         write.ProgramWriter.write_line(f"CMP EAX, False ; If.evaluate()")
-        if len(self.children == 3):
+        if len(self.children) == 3:
             write.ProgramWriter.write_line(f"JE ELSE_{self.i} ; If.evaluate()")
 
         if condition_result:
