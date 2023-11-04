@@ -308,7 +308,7 @@ class VarDec(Node):
         declared_var_type = self.value
 
         write.ProgramWriter.write_line(
-            f"PUSH DWORD 0 ; VarDec.evaluate() (alocação da variável {identifier} na pilha)")
+            f"PUSH DWORD 0 ; VarDec.evaluate() (alocação da variável {identifier} na pilha em [EBP - F])")
 
         if len(self.children) == 1:
             SymbolTable.create_empty(
@@ -332,7 +332,7 @@ class Scanln(Node):
 
     def evaluate(self, symbol_table: SymbolTable) -> tuple:
         write.ProgramWriter.write_line("PUSH scanint ; Scanln.evaluate()")
-        write.ProgramWriter.write_line("PUSH Formatin ; Scanln.evaluate")
+        write.ProgramWriter.write_line("PUSH formatin ; Scanln.evaluate")
         write.ProgramWriter.write_line("call scanf ; Scanln.evaluate()")
         write.ProgramWriter.write_line("ADD ESP, 8 ; Scanln.evaluate()")
         write.ProgramWriter.write_line("MOV EAX, DWORD [scanint] ; Scanln.evaluate()")
@@ -352,23 +352,25 @@ class If(Node):
      - children[2] -> nó Block a ser executado no else (opcional)
     '''
 
-    def evaluate(self, symbol_table: SymbolTable) -> tuple:
+    def evaluate(self, symbol_table: SymbolTable, first_time:bool = True) -> tuple:
         condition_node = self.children[0]
         true_block = self.children[1]
 
         condition_result = condition_node.evaluate(symbol_table)
+
         write.ProgramWriter.write_line(f"CMP EAX, False ; If.evaluate()")
-        write.ProgramWriter.write_line(f"JE ELSE_{self.i} ; If.evaluate()")
+        if len(self.children == 3):
+            write.ProgramWriter.write_line(f"JE ELSE_{self.i} ; If.evaluate()")
 
         if condition_result:
             true_block.evaluate(symbol_table)
             write.ProgramWriter.write_line(f"JMP EXIT_{self.i} ; If.evaluate()")
         elif len(self.children) == 3:
-            write.ProgramWriter.write_line(f"ELSE_{self.i} ; If.evaluate()")
+            write.ProgramWriter.write_line(f"ELSE_{self.i}: ; If.evaluate()")
             else_block = self.children[2]
             else_block.evaluate(symbol_table)
 
-        write.ProgramWriter.write_line(f"EXIT_{self.i} ; If.evaluate()")
+        write.ProgramWriter.write_line(f"EXIT_{self.i}: ; If.evaluate()")
 
 
 class For(Node):
@@ -395,18 +397,24 @@ class For(Node):
         # Atualiza symbol table
         iteration_node.evaluate(symbol_table)
 
-        write.ProgramWriter.write_line(f"FOR_{self.i}; For.evaluate()")
-        
-        condition_result = condition_node.evaluate(symbol_table)
-        write.ProgramWriter.write_line("CMP EAX, False; ; For.evaluate()")
+        write.ProgramWriter.write_line(f"FOR_{self.i}: ; For.evaluate()")
+        condition_node.evaluate(symbol_table)
+        write.ProgramWriter.write_line("CMP EAX, False ; For.evaluate()")
         write.ProgramWriter.write_line(f"JE EXIT_{self.i} ; For.evaluate()")
-
+        write.ProgramWriter.write_line("; Bloco de comandos")
+        block_node.evaluate(symbol_table)
+        write.ProgramWriter.write_line("; Incremento")
+        increment_node.evaluate(symbol_table)
         # Toda vez que entrar no while, tem que reavaliar condição
-        while condition_result == (1, VarType.INT):
-            # Executar nó block
-            block_node.evaluate(symbol_table)
-            # Incrementar variável
-            increment_node.evaluate(symbol_table)
+        # while condition_result == (1, VarType.INT):
+        #     # Executar nó block
+        #     write.ProgramWriter.write_line("; Bloco de comandos")
+        #     block_node.evaluate(symbol_table)
+        #     # Incrementar variável
+        #     write.ProgramWriter.write_line("; Incremento")
+        #     increment_node.evaluate(symbol_table)
+        #     # Reavaliar condição
+        #     condition_result = condition_node.evaluate(symbol_table)
         
         write.ProgramWriter.write_line(f"JMP FOR_{self.i}")
-        write.ProgramWriter.write_line(f"EXIT_{self.i} ; For.evaluate()")
+        write.ProgramWriter.write_line(f"EXIT_{self.i}: ; For.evaluate()")
