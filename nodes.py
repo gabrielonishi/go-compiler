@@ -359,18 +359,20 @@ class If(Node):
         condition_result = condition_node.evaluate(symbol_table)
 
         write.ProgramWriter.write_line(f"CMP EAX, False ; If.evaluate()")
+
         if len(self.children) == 3:
-            write.ProgramWriter.write_line(f"JE ELSE_{self.i} ; If.evaluate()")
+            write.ProgramWriter.write_line(f"JE ELSE_{self.id} ; If.evaluate()")
 
         if condition_result:
             true_block.evaluate(symbol_table)
-            write.ProgramWriter.write_line(f"JMP EXIT_{self.i} ; If.evaluate()")
-        elif len(self.children) == 3:
-            write.ProgramWriter.write_line(f"ELSE_{self.i}: ; If.evaluate()")
-            else_block = self.children[2]
-            else_block.evaluate(symbol_table)
+            write.ProgramWriter.write_line(f"JMP EXIT_{self.id} ; If.evaluate()")
+        if len(self.children) == 3:
+            write.ProgramWriter.write_line(f"ELSE_{self.id}: ; If.evaluate()")
+            if not condition_result:
+                else_block = self.children[2]
+                else_block.evaluate(symbol_table)
 
-        write.ProgramWriter.write_line(f"EXIT_{self.i}: ; If.evaluate()")
+        write.ProgramWriter.write_line(f"EXIT_{self.id}: ; If.evaluate()")
 
 
 class For(Node):
