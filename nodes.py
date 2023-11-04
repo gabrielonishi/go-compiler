@@ -405,6 +405,7 @@ class For(Node):
         block_node.evaluate(symbol_table)
         write.ProgramWriter.write_line("; Incremento")
         increment_node.evaluate(symbol_table)
+        
         # Toda vez que entrar no while, tem que reavaliar condição
         # while condition_result == (1, VarType.INT):
         #     # Executar nó block
