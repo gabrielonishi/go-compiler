@@ -312,6 +312,17 @@ class VarDec(Node):
             SymbolTable.create(symbol_table, identifier=identifier, variable=variable,
                                declared_var_type=declared_var_type)
 
+class Return(Node):
+    '''
+    Retorna dentro de uma função
+
+    value: None
+    children: Não se sabe 
+    '''
+    
+    def evaluate(self, symbol_table: SymbolTable) -> Node:
+        result_node = self.children[0]
+        return result_node.evaluate(symbol_table)
 
 class Scanln(Node):
     '''
