@@ -140,39 +140,41 @@ class Parser:
 
     @staticmethod
     def parse_relation_expression() -> nodes.Node:
-        relation_expression = Parser.parse_expression()
+        expression = Parser.parse_expression()
 
         while Parser.tokenizer.next.type == tokens.TokenType.NUMERIC_COMPARISON:
-            if Parser.tokenizer.next.value == "==":
+            operation = Parser.tokenizer.next.value
+            if operation == "==":
                 Parser.tokenizer.select_next()
                 other_expression = Parser.parse_expression()
-                relation_expression = nodes.BinOp(
-                    value='==', children=[relation_expression, other_expression])
-            elif Parser.tokenizer.next.value == ">":
+                expression = nodes.BinOp(
+                    value='==', children=[expression, other_expression])
+            elif operation == ">":
                 Parser.tokenizer.select_next()
                 other_expression = Parser.parse_expression()
-                relation_expression = nodes.BinOp(
-                    value='>', children=[relation_expression, other_expression])
-            elif Parser.tokenizer.next.value == "<":
+                expression = nodes.BinOp(
+                    value='>', children=[expression, other_expression])
+            elif operation == "<":
                 Parser.tokenizer.select_next()
                 other_expression = Parser.parse_expression()
-                relation_expression = nodes.BinOp(
-                    value='<', children=[relation_expression, other_expression])
-        return relation_expression
+                expression = nodes.BinOp(
+                    value='<', children=[expression, other_expression])
+        return expression
 
     @staticmethod
     def parse_expression():
         term = Parser.parse_term()
         while Parser.tokenizer.next.type == tokens.TokenType.FIRST_ORDER_OPERATIONS:
-            if Parser.tokenizer.next.value == '-':
+            operation = Parser.tokenizer.next.value
+            if operation == '-':
                 Parser.tokenizer.select_next()
                 other_term = Parser.parse_term()
                 term = nodes.BinOp(value='-', children=[term, other_term])
-            elif Parser.tokenizer.next.value == '+':
+            elif operation == '+':
                 Parser.tokenizer.select_next()
                 other_term = Parser.parse_term()
                 term = nodes.BinOp(value='+', children=[term, other_term])
-            elif Parser.tokenizer.next.value == '.':
+            elif operation == '.':
                 Parser.tokenizer.select_next()
                 other_term = Parser.parse_term()
                 term = nodes.BinOp(value='.', children=[term, other_term])
@@ -182,11 +184,12 @@ class Parser:
     def parse_term() -> nodes.Node:
         factor = Parser.parse_factor()
         while Parser.tokenizer.next.type == tokens.TokenType.SECOND_ORDER_OPERATIONS:
-            if Parser.tokenizer.next.value == '*':
+            operation = Parser.tokenizer.next.value 
+            if operation == '*':
                 Parser.tokenizer.select_next()
                 other_factor = Parser.parse_factor()
                 factor = nodes.BinOp(value='*', children=[factor, other_factor])
-            elif Parser.tokenizer.next.value == '/':
+            elif operation == '/':
                 Parser.tokenizer.select_next()
                 other_factor = Parser.parse_factor()
                 factor = nodes.BinOp(value='/', children=[factor, other_factor])
