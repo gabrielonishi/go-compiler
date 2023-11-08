@@ -1,6 +1,6 @@
 import typing
 from enum import Enum, auto
-from nodes import VarType
+from tables import VarType
 
 class PrePro():
     '''

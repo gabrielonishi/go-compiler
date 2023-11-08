@@ -1,59 +1,4 @@
-from enum import Enum, auto
-
-
-class VarType(Enum):
-    INT = auto()
-    STRING = auto()
-
-
-class SymbolTable():
-    '''
-    Serve como memória do compilador, associando idenitfier à
-    variáveis
-
-    self.symbol_table = 
-    {
-        identifier1 = (value, type), 
-        identifier2 = (value, type),
-        ...
-    }
-    '''
-
-    def __init__(self):
-        self.symbol_table = {}
-
-    def get(self, identifier):
-
-        if identifier not in self.symbol_table:
-            raise ValueError(
-                f'ERRO EM SymbolTable: Variável {self.identifier} sem atribuição')
-
-        return self.symbol_table[identifier]
-
-    def set(self, identifier, value, var_type: VarType) -> None:
-        if identifier not in list(self.symbol_table.keys()):
-            raise ValueError("Tenta mudar variável antes de declará-la")
-        last_value, last_type = self.symbol_table[identifier]
-        if last_type != var_type:
-            raise ValueError("Tenta mudar tipo de variável")
-        self.symbol_table[identifier] = (value, var_type)
-
-    def create_empty(self, identifier: str, declared_var_type: VarType) -> None:
-        if identifier in self.symbol_table:
-            raise ValueError("Não se pode criar um mesmo identifier 2 vezes")
-
-        self.symbol_table[identifier] = (None, declared_var_type)
-
-    def create(self, identifier: str, variable: tuple, declared_var_type: VarType) -> None:
-        variable_value, variable_type = variable
-        if variable_type != declared_var_type:
-            raise ValueError(
-                "Tipo declarado da variável é diferente do tipo da variável")
-        self.symbol_table[identifier] = variable
-
-    def get_table(self):
-        return self.symbol_table
-
+from tables import SymbolTable, VarType
 
 class Node():
     '''
@@ -312,6 +257,23 @@ class VarDec(Node):
             SymbolTable.create(symbol_table, identifier=identifier, variable=variable,
                                declared_var_type=declared_var_type)
 
+
+class FuncDec(Node):
+    '''
+    Representa componentes de uma função
+    
+    value: None
+    children: n + 2 filhos
+     - children[0]: VarDec do nome da função
+     - children[1]: Block
+     - children[n]: VarDec do argumento
+
+    evaluate: Instancia função na func_table
+    '''
+
+    def evaluate(self, symbol_table: SymbolTable) -> None:
+        pass
+
 class Return(Node):
     '''
     Retorna dentro de uma função
@@ -319,10 +281,11 @@ class Return(Node):
     value: None
     children: Não se sabe 
     '''
-    
+
     def evaluate(self, symbol_table: SymbolTable) -> Node:
         result_node = self.children[0]
         return result_node.evaluate(symbol_table)
+
 
 class Scanln(Node):
     '''
