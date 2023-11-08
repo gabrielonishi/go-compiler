@@ -75,14 +75,14 @@ class FuncTable():
     func_table = dict()
     
     @staticmethod
-    def get(function_name:str):
+    def get(function_name:str) -> tuple:
         if function_name not in FuncTable.func_table:
             raise ValueError(f'Tenta pegar função que não foi previamente declarada')
         
         return FuncTable.func_table[function_name]
     
     @staticmethod
-    def set(function_name:str, func_dec_node, function_type:VarType):
+    def set(function_name:str, func_dec_node, function_type:VarType) -> None:
         if function_name in FuncTable.func_table:
             raise ValueError(f'Tenta criar mesma função duas vezes')
         

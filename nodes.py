@@ -278,7 +278,40 @@ class FuncDec(Node):
         function_name_identifier_node = function_name_var_dec_node.children[0]
         function_name = function_name_identifier_node.value
 
-        FuncTable.set(function_name=function_name, func_dec_node=self, function_type = function_type)
+        FuncTable.set(function_name=function_name,
+                      func_dec_node=self, function_type=function_type)
+
+
+class FuncCall(Node):
+    '''
+    Representa chamada de uma função
+
+    value: nome da função
+    children: n (número de args passados na chamada)
+    '''
+
+    def evaluate(self, symbol_table: SymbolTable) -> Node:
+        function_name = self.value
+        func_dec_node, func_return_type = FuncTable.get(
+            function_name=function_name)
+        func_symbol_table = SymbolTable()
+
+        if len(self.children) != (func_dec_node.children):
+            raise ValueError("Chama função com número errado de argumentos")
+
+        for i in len(self.children):
+            # func_dec_node.children[0] é o nome da função
+            # func_dec_node.children[1] é o bloco
+            dec_arg_node = func_dec_node.children[i+2]
+            # criar variáveis na symbol_table da função
+            dec_arg_node.evaluate(func_symbol_table)
+            # atribuir valor do argumento passado na nova st
+            call_arg_node = self.children[i]
+            call_arg_node.evaluate(func_symbol_table)
+        
+        func_block_node = func_dec_node[1]
+        func_block_node.evaluate()
+        
 
 class Return(Node):
     '''
