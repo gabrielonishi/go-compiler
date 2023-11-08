@@ -74,9 +74,12 @@ class TokenType(Enum):
     FOR = auto()
     ELSE = auto()
     SEMICOLON = auto()
+    COLON = auto()
     STRING = auto()
     VAR_DECLARATION = auto()
     VAR_TYPE = auto()
+    RETURN = auto()
+    FUNCTION_NAME = auto()
 
 
 class Token:
@@ -97,7 +100,7 @@ class Tokenizer:
     '''
 
     OPERATORS = ['-', '+', '*', '/',
-                 '(', ')', '=', '\n', '&', '|', '>', '<', '!', '{', '}', ';', '.']
+                 '(', ')', '=', '\n', '&', '|', '>', '<', '!', '{', '}', ';', '.', ',']
     RESERVED_KEYWORDS = ['Println', 'Scanln', 'if',
                          'else', 'for', 'var', 'string', 'int']
 
@@ -135,6 +138,8 @@ class Tokenizer:
             self.next = Token(value='}', type=TokenType.BRACKETS)
         elif next_character == ';':
             self.next = Token(value=';', type=TokenType.SEMICOLON)
+        elif next_character == ',':
+            self.next = Token(value=',', type=TokenType.COLON)
         elif next_character == '.':
             self.next = Token(value='.', type=TokenType.FIRST_ORDER_OPERATIONS)
         elif next_character == '=':
@@ -177,6 +182,10 @@ class Tokenizer:
             self.next = Token(value=VarType.STRING, type=TokenType.VAR_TYPE)
         elif key_word == 'int':
             self.next = Token(value=VarType.INT, type=TokenType.VAR_TYPE)
+        elif key_word == 'return':
+            self.next = Token(value='return', type=TokenType.RETURN)
+        elif key_word == 'func':
+            self.next = Token(value='func', type=TokenType.FUNCTION_NAME)
 
     def select_next(self) -> None:
         '''Lê o próximo token e atualiza o atributo next'''
