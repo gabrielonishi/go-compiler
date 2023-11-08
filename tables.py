@@ -1,6 +1,5 @@
 from enum import Enum, auto
 
-
 class VarType(Enum):
     INT = auto()
     STRING = auto()
@@ -10,6 +9,9 @@ class SymbolTable():
     '''
     Serve como memória do compilador, associando idenitfier à
     variáveis
+
+    Pode existir mais de uma symbol_table (uma para a main e 
+    outras para o escopo de funções)
 
     self.symbol_table = 
     {
@@ -53,3 +55,35 @@ class SymbolTable():
 
     def get_table(self):
         return self.symbol_table
+
+
+class FuncTable():
+    '''
+    Classe estática que serve como memória do compilador, 
+    associando nome da função com o seu nó e tipo
+    
+    Só existe uma func_table por programa
+
+    self.func_table = 
+    {
+        func1 = (func_dec_node1, type1),
+        func2 = (func_dec_node2, type2),
+        ...
+    }
+    '''
+
+    func_table = dict()
+    
+    @staticmethod
+    def get(function_name:str):
+        if function_name not in FuncTable.func_table:
+            raise ValueError(f'Tenta pegar função que não foi previamente declarada')
+        
+        return FuncTable.func_table[function_name]
+    
+    @staticmethod
+    def set(function_name:str, func_dec_node):
+        if function_name in FuncTable.func_table:
+            raise ValueError(f'Tenta criar mesma função duas vezes')
+
+        FuncTable.func_table[function_name] = func_dec_node

@@ -1,4 +1,5 @@
-from tables import SymbolTable, VarType
+from tables import SymbolTable, FuncTable, VarType
+
 
 class Node():
     '''
@@ -261,7 +262,7 @@ class VarDec(Node):
 class FuncDec(Node):
     '''
     Representa componentes de uma função
-    
+
     value: None
     children: n + 2 filhos
      - children[0]: VarDec do nome da função
@@ -272,7 +273,12 @@ class FuncDec(Node):
     '''
 
     def evaluate(self, symbol_table: SymbolTable) -> None:
-        pass
+        function_name_var_dec_node = self.children[0]
+        function_name_identifier_node = function_name_var_dec_node.children[0]
+        function_name = function_name_identifier_node.value
+
+        FuncTable.set(function_name=function_name, func_dec_node=self)
+
 
 class Return(Node):
     '''
