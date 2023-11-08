@@ -318,7 +318,7 @@ class Return(Node):
     Retorna dentro de uma função
 
     value: None
-    children: Não se sabe 
+    children: bool_expression
     '''
 
     def evaluate(self, symbol_table: SymbolTable) -> Node:

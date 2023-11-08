@@ -157,6 +157,11 @@ class Parser:
             else:
                 statement = nodes.VarDec(
                     value=var_type, children=[identifier_node])
+
+        elif (Parser.tokenizer.next.type == tokens.TokenType.RETURN):
+            Parser.tokenizer.select_next()
+            bool_expression = Parser.parse_bool_expression()
+            statement = nodes.Return(value=None, children=[bool_expression])
         else:
             statement = Parser.assign()
         if Parser.tokenizer.next.type == tokens.TokenType.LINEFEED:
@@ -312,13 +317,29 @@ class Parser:
         variable = Parser.tokenizer.next.value
         identifier_node = nodes.Identifier(value=variable, children=[])
         Parser.tokenizer.select_next()
-        if Parser.tokenizer.next.type != tokens.TokenType.ATTRIBUTE:
-            raise ValueError(
-                'ERRO EM Parser.assign(): Não passou um operador "="')
-        Parser.tokenizer.select_next()
-        bool_expression = Parser.parse_bool_expression()
-        return nodes.Assignment(value=None, children=[identifier_node, bool_expression])
-
+        if Parser.tokenizer.next.type == tokens.TokenType.ATTRIBUTE:
+            Parser.tokenizer.select_next()
+            bool_expression = Parser.parse_bool_expression()
+            return nodes.Assignment(value=None, children=[identifier_node, bool_expression])
+        
+        elif Parser.tokenizer.next.value == "(":
+            Parser.tokenizer.select_next()
+            args_list = list()
+            while Parser.tokenizer.next.value == ')':
+                arg = Parser.parse_bool_expression()
+                args_list.append(arg)
+                if Parser.tokenizer.next.value == ',':
+                    Parser.tokenizer.select_next()
+                    continue
+                elif Parser.tokenizer.next.value == ')':
+                    Parser.tokenizer.select_next()
+                    break
+                else:
+                    raise ValueError(f'Problema ao chamar {identifier_node}')
+            return nodes.FuncCall(identifier_node, args_list)
+        else:
+            raise ValueError(f"Próximo valor deveria ser '=' ou '(', mas é do tipo {Parser.tokenizer.next.type})")
+    
     @staticmethod
     def run(code: str) -> nodes.Node:
         '''
