@@ -369,11 +369,11 @@ class If(Node):
 
         if len(self.children) == 3:
             write.ProgramWriter.write_line(f'JMP EXIT_{self.id} ; If.evaluate')
-            write.ProgramWriter.write_line(f'ELSE_{self.id} ; If.evaluate')
+            write.ProgramWriter.write_line(f'ELSE_{self.id}: ; If.evaluate')
             else_block = self.children[2]
             else_block.evaluate(symbol_table)
             
-        write.ProgramWriter.write_line(f'EXIT_{self.id} ; If.evaluate')    
+        write.ProgramWriter.write_line(f'EXIT_{self.id}: ; If.evaluate')    
 
         # if len(self.children) == 3:
         #     write.ProgramWriter.write_line(f"JE ELSE_{self.id} ; If.evaluate()")
