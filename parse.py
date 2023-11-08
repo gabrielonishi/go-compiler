@@ -11,11 +11,11 @@ class Parser:
 
     @staticmethod
     def parse_program() -> nodes.Node:
-        statements = list()
+        func_declarations = list()
         while (Parser.tokenizer.next.type != tokens.TokenType.EOF):
-            statement = Parser.parse_statement()
-            statements.append(statement)
-        return nodes.Program(value=None, children=statements)
+            func_declaration = Parser.parse_declaration()
+            func_declarations.append(func_declarations)
+        return nodes.Program(value=None, children=func_declarations)
 
     @staticmethod
     def parse_declaration() -> nodes.Node:
