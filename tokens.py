@@ -79,7 +79,7 @@ class TokenType(Enum):
     VAR_DECLARATION = auto()
     VAR_TYPE = auto()
     RETURN = auto()
-    FUNCTION_NAME = auto()
+    FUNC = auto()
 
 
 class Token:
@@ -185,7 +185,7 @@ class Tokenizer:
         elif key_word == 'return':
             self.next = Token(value='return', type=TokenType.RETURN)
         elif key_word == 'func':
-            self.next = Token(value='func', type=TokenType.FUNCTION_NAME)
+            self.next = Token(value='func', type=TokenType.FUNC)
 
     def select_next(self) -> None:
         '''Lê o próximo token e atualiza o atributo next'''
