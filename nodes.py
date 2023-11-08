@@ -264,7 +264,7 @@ class FuncDec(Node):
     Representa componentes de uma função
 
     value: None
-    children: n + 2 filhos
+    children: número de args + 2 filhos
      - children[0]: VarDec do nome da função
      - children[1]: Block
      - children[n]: VarDec do argumento
@@ -274,11 +274,11 @@ class FuncDec(Node):
 
     def evaluate(self, symbol_table: SymbolTable) -> None:
         function_name_var_dec_node = self.children[0]
+        function_type = function_name_var_dec_node.value
         function_name_identifier_node = function_name_var_dec_node.children[0]
         function_name = function_name_identifier_node.value
 
-        FuncTable.set(function_name=function_name, func_dec_node=self)
-
+        FuncTable.set(function_name=function_name, func_dec_node=self, function_type = function_type)
 
 class Return(Node):
     '''
