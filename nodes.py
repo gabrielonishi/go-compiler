@@ -360,19 +360,20 @@ class If(Node):
 
         write.ProgramWriter.write_line(f"CMP EAX, False ; If.evaluate()")
 
-        if len(self.children) == 3:
-            write.ProgramWriter.write_line(f'JE ELSE_{self.id} ; If.evaluate')
-        elif len(self.children) == 2:
+        if len(self.children) == 2:
             write.ProgramWriter.write_line(f'JE EXIT_{self.id} ; If.evaluate')
-
+        elif len(self.children) == 3:
+            write.ProgramWriter.write_line(f'JE ELSE_{self.id} ; If.evaluate')
+        
         true_block.evaluate(symbol_table)
 
         if len(self.children) == 3:
+            write.ProgramWriter.write_line(f'JMP EXIT_{self.id} ; If.evaluate')
             write.ProgramWriter.write_line(f'ELSE_{self.id} ; If.evaluate')
             else_block = self.children[2]
             else_block.evaluate(symbol_table)
-        elif len(self.children) == 2:
-            write.ProgramWriter.write_line(f'EXIT_{self.id} ; If.evaluate')    
+            
+        write.ProgramWriter.write_line(f'EXIT_{self.id} ; If.evaluate')    
 
         # if len(self.children) == 3:
         #     write.ProgramWriter.write_line(f"JE ELSE_{self.id} ; If.evaluate()")
