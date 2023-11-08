@@ -13,7 +13,7 @@ class Node():
 
     Métodos: 
      - evaluate(): varia de nó para nó
-     - newId(): método estático que atualiza o Id do nó
+     - update_id(): método estático que atualiza o Id do nó
     '''
 
     i = 0
@@ -21,13 +21,13 @@ class Node():
     def __init__(self, value, children: list):
         self.value = value
         self.children = children
-        self.id = Node.newId()
+        self.id = Node.update_id()
 
     def evaluate(self, symbol_table: SymbolTable) -> tuple:
         pass
 
     @staticmethod
-    def newId():
+    def update_id():
         Node.i += 1
         return Node.i
 
@@ -356,23 +356,36 @@ class If(Node):
         condition_node = self.children[0]
         true_block = self.children[1]
 
-        condition_result = condition_node.evaluate(symbol_table)
+        condition_node.evaluate(symbol_table)
 
         write.ProgramWriter.write_line(f"CMP EAX, False ; If.evaluate()")
 
         if len(self.children) == 3:
-            write.ProgramWriter.write_line(f"JE ELSE_{self.id} ; If.evaluate()")
+            write.ProgramWriter.write_line(f'JE ELSE_{self.id} ; If.evaluate')
+        elif len(self.children) == 2:
+            write.ProgramWriter.write_line(f'JE EXIT_{self.id} ; If.evaluate')
 
-        if condition_result:
-            true_block.evaluate(symbol_table)
-            write.ProgramWriter.write_line(f"JMP EXIT_{self.id} ; If.evaluate()")
+        true_block.evaluate(symbol_table)
+
         if len(self.children) == 3:
-            write.ProgramWriter.write_line(f"ELSE_{self.id}: ; If.evaluate()")
-            if not condition_result:
-                else_block = self.children[2]
-                else_block.evaluate(symbol_table)
+            write.ProgramWriter.write_line(f'ELSE_{self.id} ; If.evaluate')
+            else_block = self.children[2]
+            else_block.evaluate(symbol_table)
+        elif len(self.children) == 2:
+            write.ProgramWriter.write_line(f'EXIT_{self.id} ; If.evaluate')    
 
-        write.ProgramWriter.write_line(f"EXIT_{self.id}: ; If.evaluate()")
+        # if len(self.children) == 3:
+        #     write.ProgramWriter.write_line(f"JE ELSE_{self.id} ; If.evaluate()")
+
+        # if condition_result:
+        #     true_block.evaluate(symbol_table)
+        #     write.ProgramWriter.write_line(f"JMP EXIT_{self.id} ; If.evaluate()")
+        # if len(self.children) == 3:
+        #     write.ProgramWriter.write_line(f"ELSE_{self.id}: ; If.evaluate()")
+        #     if not condition_result:
+        #         else_block = self.children[2]
+        #         else_block.evaluate(symbol_table)
+        # write.ProgramWriter.write_line(f"EXIT_{self.id}: ; If.evaluate()")
 
 
 class For(Node):
@@ -399,10 +412,10 @@ class For(Node):
         # Atualiza symbol table
         iteration_node.evaluate(symbol_table)
 
-        write.ProgramWriter.write_line(f"FOR_{self.i}: ; For.evaluate()")
+        write.ProgramWriter.write_line(f"FOR_{self.id}: ; For.evaluate()")
         condition_node.evaluate(symbol_table)
         write.ProgramWriter.write_line("CMP EAX, False ; For.evaluate()")
-        write.ProgramWriter.write_line(f"JE EXIT_{self.i} ; For.evaluate()")
+        write.ProgramWriter.write_line(f"JE EXIT_{self.id} ; For.evaluate()")
         write.ProgramWriter.write_line("; Bloco de comandos")
         block_node.evaluate(symbol_table)
         write.ProgramWriter.write_line("; Incremento")
@@ -419,5 +432,5 @@ class For(Node):
         #     # Reavaliar condição
         #     condition_result = condition_node.evaluate(symbol_table)
         
-        write.ProgramWriter.write_line(f"JMP FOR_{self.i}")
-        write.ProgramWriter.write_line(f"EXIT_{self.i}: ; For.evaluate()")
+        write.ProgramWriter.write_line(f"JMP FOR_{self.id}")
+        write.ProgramWriter.write_line(f"EXIT_{self.id}: ; For.evaluate()")
