@@ -102,7 +102,7 @@ class Tokenizer:
     OPERATORS = ['-', '+', '*', '/',
                  '(', ')', '=', '\n', '&', '|', '>', '<', '!', '{', '}', ';', '.', ',']
     RESERVED_KEYWORDS = ['Println', 'Scanln', 'if',
-                         'else', 'for', 'var', 'string', 'int']
+                         'else', 'for', 'var', 'string', 'int', 'func', 'return']
 
     def __init__(self, source: str) -> None:
         self.source = source

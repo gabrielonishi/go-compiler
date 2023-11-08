@@ -14,7 +14,12 @@ class Parser:
         func_declarations = list()
         while (Parser.tokenizer.next.type != tokens.TokenType.EOF):
             func_declaration = Parser.parse_declaration()
-            func_declarations.append(func_declarations)
+            func_declarations.append(func_declaration)
+        
+        # Agora precisamos chamar a main
+        call_main = nodes.FuncCall(value = 'main', children=[])
+        func_declarations.append(call_main)
+        
         return nodes.Program(value=None, children=func_declarations)
 
     @staticmethod
@@ -292,10 +297,26 @@ class Parser:
                 raise ValueError(
                     f'PARSE FACTOR ERROR: Problema de fechamento de aspas em {Parser.tokenizer.position}')
         elif Parser.tokenizer.next.type == tokens.TokenType.IDENTIFIER:
-            variable = Parser.tokenizer.next.value
+            identifier = Parser.tokenizer.next.value
             Parser.tokenizer.select_next()
-            factor = nodes.Identifier(value=variable, children=[])
+            if Parser.tokenizer.next.value == '(':
+                Parser.tokenizer.select_next()
+                args_list = list()
+                while Parser.tokenizer.next.value == ')':
+                    arg = Parser.parse_bool_expression()
+                    args_list.append(arg)
+                    if Parser.tokenizer.next.value == ',':
+                        Parser.tokenizer.select_next()
+                        continue
+                    elif Parser.tokenizer.next.value == ')':
+                        Parser.tokenizer.select_next()
+                        break
+                    else:
+                        raise ValueError(f'Problema ao chamar {identifier}')
+                return nodes.FuncCall(identifier, args_list)
+            factor = nodes.Identifier(value=identifier, children=[])
             return factor
+        
         elif Parser.tokenizer.next.type == tokens.TokenType.SCANLN:
             Parser.tokenizer.select_next()
             if Parser.tokenizer.next.value != "(":

@@ -1,6 +1,8 @@
-
-var x_1 int
-
-for x_1 = 0; x_1 < 1; x_1 = x_1 + 1 {
-	Println(x_1)
+func main() int {
+	var a int
+	var b int
+	a = 3
+	b = soma(a, 4)
+	Println(a)
+	Println(b)
 }
