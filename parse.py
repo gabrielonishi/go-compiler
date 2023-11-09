@@ -48,7 +48,7 @@ class Parser:
                     f"Não manda identifier dentro da declaração de {func_identifier}")
             
             arg_identifier = Parser.tokenizer.next.value
-            arg_identifier_node = nodes.Identifier(value=arg_identifier)
+            arg_identifier_node = nodes.Identifier(value=arg_identifier, children=list())
             Parser.tokenizer.select_next()
 
             if Parser.tokenizer.next.type != tokens.TokenType.VAR_TYPE:
