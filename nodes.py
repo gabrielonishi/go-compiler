@@ -296,10 +296,10 @@ class FuncCall(Node):
             function_name=function_name)
         func_symbol_table = SymbolTable()
 
-        if len(self.children) != (func_dec_node.children):
+        if len(self.children) != len(func_dec_node.children) - 2:
             raise ValueError("Chama função com número errado de argumentos")
 
-        for i in len(self.children):
+        for i in range(len(self.children)):
             # func_dec_node.children[0] é o nome da função
             # func_dec_node.children[1] é o bloco
             dec_arg_node = func_dec_node.children[i+2]
@@ -309,8 +309,8 @@ class FuncCall(Node):
             call_arg_node = self.children[i]
             call_arg_node.evaluate(func_symbol_table)
         
-        func_block_node = func_dec_node[1]
-        func_block_node.evaluate()
+        func_block_node = func_dec_node.children[1]
+        func_block_node.evaluate(symbol_table)
         
 
 class Return(Node):

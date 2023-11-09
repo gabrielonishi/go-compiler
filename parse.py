@@ -19,7 +19,7 @@ class Parser:
         # Agora precisamos chamar a main
         call_main = nodes.FuncCall(value = 'main', children=[])
         func_declarations.append(call_main)
-        
+
         return nodes.Program(value=None, children=func_declarations)
 
     @staticmethod
@@ -27,51 +27,66 @@ class Parser:
         if Parser.tokenizer.next.type != tokens.TokenType.FUNC:
             raise ValueError("Declaração de função precisa começar com 'func'")
         Parser.tokenizer.select_next()
+
         if Parser.tokenizer.next.type != tokens.TokenType.IDENTIFIER:
             raise ValueError(
                 f"Esperava-se um identifier depois de func, mas recebi {Parser.tokenizer.next.type}")
+        
         func_identifier = Parser.tokenizer.next.value
-        func_identifier_node = nodes.Identifier(value=func_identifier)
+        func_identifier_node = nodes.Identifier(value=func_identifier, children=[])
         Parser.tokenizer.select_next()
+
         if Parser.tokenizer.next.value != "(":
             raise ValueError(
                 f"Não abriu parenteses depois de func {func_identifier}")
+        
         Parser.tokenizer.select_next()
         arg_nodes = list()
-        while True:
+        while Parser.tokenizer.next.value != ')':
             if Parser.tokenizer.next.type != tokens.TokenType.IDENTIFIER:
                 raise ValueError(
                     f"Não manda identifier dentro da declaração de {func_identifier}")
+            
             arg_identifier = Parser.tokenizer.next.value
             arg_identifier_node = nodes.Identifier(value=arg_identifier)
             Parser.tokenizer.select_next()
+
             if Parser.tokenizer.next.type != tokens.TokenType.VAR_TYPE:
                 raise ValueError(
                     f"Não especifica tipo da variável de {arg_identifier} em {func_identifier}")
+            
             arg_tipo = Parser.tokenizer.next.value
             arg_var_dec = nodes.VarDec(
                 arg_tipo, children=[arg_identifier_node])
             arg_nodes.append(arg_var_dec)
             Parser.tokenizer.select_next()
+
             if (Parser.tokenizer.next.type == tokens.TokenType.COLON):
                 Parser.tokenizer.select_next()
             elif (Parser.tokenizer.next.value == ")"):
-                Parser.tokenizer.select_next()
                 break
             else:
                 raise ValueError(
                     f"Declaração errada de func {func_identifier}")
+        Parser.tokenizer.select_next()
         if (Parser.tokenizer.next.type != tokens.TokenType.VAR_TYPE):
             raise ValueError(
                 f'Não manda tipo da variável ao declarar {arg_identifier}')
+        
         func_return_type = Parser.tokenizer.next.value
+        func_name_var_dec = nodes.VarDec(value=func_return_type, children=[func_identifier_node])
         Parser.tokenizer.select_next()
         func_block = Parser.parse_block()
+
         if Parser.tokenizer.next.type != tokens.TokenType.LINEFEED:
             raise ValueError("Não pula linha após block")
-        func_node = nodes.FuncDec(func_identifier_node, func_block)
+        
+        Parser.tokenizer.select_next()
+        func_node = nodes.FuncDec(value=None, children=[func_name_var_dec, func_block])
+
         for node in arg_nodes:
             func_node.children.append(node)
+            
         return func_node
 
     @staticmethod

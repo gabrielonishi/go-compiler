@@ -86,7 +86,5 @@ class FuncTable():
         if function_name in FuncTable.func_table:
             raise ValueError(f'Tenta criar mesma função duas vezes')
         
-        if isinstance(function_type, VarType):
-            raise ValueError('function_type precisa ser do tipo VarType')
         
         FuncTable.func_table[function_name] = (func_dec_node, function_type)
