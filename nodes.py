@@ -294,6 +294,7 @@ class FuncCall(Node):
 
     def evaluate(self, symbol_table: SymbolTable) -> Node:
         function_name = self.value
+        print(function_name)
         func_dec_node, func_return_type = FuncTable.get(
             function_name=function_name)
         func_symbol_table = SymbolTable()
@@ -312,7 +313,6 @@ class FuncCall(Node):
             call_arg_node = self.children[i]
             arg_value, arg_type = call_arg_node.evaluate(symbol_table)
             func_symbol_table.set(identifier=arg_identifier, value=arg_value, var_type=arg_type)
-        
         func_block_node = func_dec_node.children[1]
         retval = func_block_node.evaluate(func_symbol_table)
         if retval is not None:

@@ -375,7 +375,7 @@ class Parser:
                     break
                 else:
                     raise ValueError(f'Problema ao chamar {identifier_node}')
-            return nodes.FuncCall(identifier_node, args_list)
+            return nodes.FuncCall(variable, args_list)
 
         else:
             raise ValueError(f"Próximo valor deveria ser '=' ou '(', mas é do tipo {Parser.tokenizer.next.type})")
