@@ -315,8 +315,12 @@ class FuncCall(Node):
         func_block_node = func_dec_node.children[1]
         retval = func_block_node.evaluate(func_symbol_table)
         if retval is not None:
-            return retval
-        
+            retval_value, retval_type = retval
+            if retval_type != func_return_type:
+                raise ValueError("Tenta retornar um valor de tipo diferente do tipo de retorno da função")
+            else:
+                return retval
+                
 
 class Return(Node):
     '''
