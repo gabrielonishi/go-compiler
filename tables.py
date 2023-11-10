@@ -28,7 +28,7 @@ class SymbolTable():
 
         if identifier not in self.symbol_table:
             raise ValueError(
-                f'ERRO EM SymbolTable: Variável {self.identifier} sem atribuição')
+                f'ERRO EM SymbolTable: Variável {identifier} sem atribuição')
 
         return self.symbol_table[identifier]
 

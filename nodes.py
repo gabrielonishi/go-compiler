@@ -213,6 +213,8 @@ class Block(Node):
 
     def evaluate(self, symbol_table: SymbolTable) -> tuple:
         for child in self.children:
+            if isinstance(child, Return):
+                return child.evaluate(symbol_table)
             child.evaluate(symbol_table)
 
 
@@ -305,12 +307,16 @@ class FuncCall(Node):
             dec_arg_node = func_dec_node.children[i+2]
             # criar variáveis na symbol_table da função
             dec_arg_node.evaluate(func_symbol_table)
+            arg_identifier = dec_arg_node.children[0].value
             # atribuir valor do argumento passado na nova st
             call_arg_node = self.children[i]
-            call_arg_node.evaluate(func_symbol_table)
+            arg_value, arg_type = call_arg_node.evaluate(func_symbol_table)
+            func_symbol_table.set(identifier=arg_identifier, value=arg_value, var_type=arg_type)
         
         func_block_node = func_dec_node.children[1]
-        func_block_node.evaluate(symbol_table)
+        retval = func_block_node.evaluate(func_symbol_table)
+        if retval is not None:
+            return retval
         
 
 class Return(Node):

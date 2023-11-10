@@ -328,7 +328,7 @@ class Parser:
                         break
                     else:
                         raise ValueError(f'Problema ao chamar {identifier}')
-                return nodes.FuncCall(identifier, args_list)
+                return nodes.FuncCall(value=identifier, children=args_list)
             
             factor = nodes.Identifier(value=identifier, children=[])
             return factor
