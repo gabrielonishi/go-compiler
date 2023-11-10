@@ -294,7 +294,6 @@ class FuncCall(Node):
 
     def evaluate(self, symbol_table: SymbolTable) -> Node:
         function_name = self.value
-        print(function_name)
         func_dec_node, func_return_type = FuncTable.get(
             function_name=function_name)
         func_symbol_table = SymbolTable()
