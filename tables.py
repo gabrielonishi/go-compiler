@@ -85,6 +85,5 @@ class FuncTable():
     def set(function_name:str, func_dec_node, function_type:VarType) -> None:
         if function_name in FuncTable.func_table:
             raise ValueError(f'Tenta criar mesma função duas vezes')
-        
-        
+                
         FuncTable.func_table[function_name] = (func_dec_node, function_type)

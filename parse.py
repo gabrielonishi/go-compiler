@@ -317,7 +317,7 @@ class Parser:
             if Parser.tokenizer.next.value == '(':
                 Parser.tokenizer.select_next()
                 args_list = list()
-                while Parser.tokenizer.next.value == ')':
+                while Parser.tokenizer.next.value != ')':
                     arg = Parser.parse_bool_expression()
                     args_list.append(arg)
                     if Parser.tokenizer.next.value == ',':
@@ -329,6 +329,7 @@ class Parser:
                     else:
                         raise ValueError(f'Problema ao chamar {identifier}')
                 return nodes.FuncCall(identifier, args_list)
+            
             factor = nodes.Identifier(value=identifier, children=[])
             return factor
         
@@ -350,9 +351,11 @@ class Parser:
         if Parser.tokenizer.next.type != tokens.TokenType.IDENTIFIER:
             raise ValueError(
                 'ERRO EM Parser.assign(): Próximo token deveria ser um identifier, mas não é')
+        
         variable = Parser.tokenizer.next.value
         identifier_node = nodes.Identifier(value=variable, children=[])
         Parser.tokenizer.select_next()
+        
         if Parser.tokenizer.next.type == tokens.TokenType.ATTRIBUTE:
             Parser.tokenizer.select_next()
             bool_expression = Parser.parse_bool_expression()
@@ -373,6 +376,7 @@ class Parser:
                 else:
                     raise ValueError(f'Problema ao chamar {identifier_node}')
             return nodes.FuncCall(identifier_node, args_list)
+
         else:
             raise ValueError(f"Próximo valor deveria ser '=' ou '(', mas é do tipo {Parser.tokenizer.next.type})")
     

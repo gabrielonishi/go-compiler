@@ -1,14 +1,9 @@
-func soma(x int, y int) int {
-	var a int
-	a = x + y
-	Println(a)
-	return a
+func test(x int) int {
+	Println("Entra")
+	return x
 }
 
 func main() int {
 	var a int
-	var b int
-	a = 3
-	Println(a)
-	Println(b)
+	a = test(1)
 }
