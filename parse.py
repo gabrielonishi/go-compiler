@@ -364,7 +364,7 @@ class Parser:
         elif Parser.tokenizer.next.value == "(":
             Parser.tokenizer.select_next()
             args_list = list()
-            while Parser.tokenizer.next.value == ')':
+            while Parser.tokenizer.next.value != ')':
                 arg = Parser.parse_bool_expression()
                 args_list.append(arg)
                 if Parser.tokenizer.next.value == ',':
