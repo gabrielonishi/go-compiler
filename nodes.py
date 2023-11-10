@@ -310,7 +310,7 @@ class FuncCall(Node):
             arg_identifier = dec_arg_node.children[0].value
             # atribuir valor do argumento passado na nova st
             call_arg_node = self.children[i]
-            arg_value, arg_type = call_arg_node.evaluate(func_symbol_table)
+            arg_value, arg_type = call_arg_node.evaluate(symbol_table)
             func_symbol_table.set(identifier=arg_identifier, value=arg_value, var_type=arg_type)
         
         func_block_node = func_dec_node.children[1]
