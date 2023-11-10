@@ -324,10 +324,10 @@ class Parser:
                         Parser.tokenizer.select_next()
                         continue
                     elif Parser.tokenizer.next.value == ')':
-                        Parser.tokenizer.select_next()
                         break
                     else:
                         raise ValueError(f'Problema ao chamar {identifier}')
+                Parser.tokenizer.select_next()
                 return nodes.FuncCall(value=identifier, children=args_list)
             
             factor = nodes.Identifier(value=identifier, children=[])
