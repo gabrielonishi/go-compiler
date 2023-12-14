@@ -6,7 +6,7 @@ Projeto individual de um compilador para a disciplina Lógica da Computação, d
 
 ### Diagrama Sintático (v2.2)
 
-![Diagrama sintático](./synctactic_diagram.drawio.png)
+![Diagrama sintático](./synctactic_diagram.drawio.svg)
 
 ### Para rodar o programa
 ```shell
