@@ -1,31 +1,35 @@
 # Go Compiler
 
-Projeto individual de um compilador para a disciplina Lógica da Computação, do 7° semestre de engenharia de computação. C
+Compiler built from scratch for [Go](https://en.wikipedia.org/wiki/Go_(programming_language)) using Python. Created for Insper Instituto de Ensino e Pesquisa course's on computational logic by [Raul Ikeda](https://www.insper.edu.br/pesquisa-e-conhecimento/docentes-pesquisadores/raul-ikeda-gomes-da-silva/).
 
-![git status](http://3.129.230.99/svg/gabrielonishi/go-compiler/)
-
-### Diagrama Sintático (v2.2)
+### Syntatic Diagram
 
 ![Diagrama sintático](./syntactic_diagram.drawio.svg)
-
-### Para rodar o programa
-```shell
-python3.py main.py entrada.go
-```
 
 ### EBNF (v2.1)
 
 ```
-BLOCK = { STATEMENT };
-STATEMENT = ( λ | ASSIGNMENT | PRINT), "\n" ;
-ASSIGNMENT = IDENTIFIER, "=", EXPRESSION ;
-PRINT = "Println", "(", EXPRESSION, ")" ;
-EXPRESSION = TERM, { ("+" | "-"), TERM } ;
+PROGRAM = { STATEMENT } ;
+BLOCK = "{", "\n", { STATEMENT }, "}" ;
+STATEMENT = ( λ | ASSIGN | PRINT | IF | FOR | VAR), "\n" ;
+ASSIGN = IDENTIFIER, "=", BOOLEAN EXPRESSION ;
+PRINT = "Println", "(", BOOLEAN EXPRESSION, ")" ;
+IF = "if", BOOLEAN EXPRESSION, BLOCK, { "else", BLOCK } ;
+FOR = "for", ASSIGN, ";", BOOLEAN EXPRESSION, ";", ASSIGN, BLOCK ;
+VAR = "var", IDENTIFIER, ( "int" | "string" ), ( λ | "=", BOOLEAN EXPRESSION ) ;
+BOOLEAN EXPRESSION = BOOLEAN TERM, { "||" BOOLEAN TERM } ;
+BOOLEAN TERM = RELATIONAL EXPRESSION, { "&&", RELATIONAL EXPRESSION } ;
+RELATIONAL EXPRESSION = EXPRESSION, { ("==" | ">" | "<"), EXPRESSION } ;
+EXPRESSION = TERM, { ("+" | "-" | "." ), TERM } ;
 TERM = FACTOR, { ("*" | "/"), FACTOR } ;
-FACTOR = (("+" | "-"), FACTOR) | NUMBER | "(", EXPRESSION, ")" | IDENTIFIER ;
+FACTOR = NUMBER | STRING | IDENTIFIER | (("+" | "-" | "!"), FACTOR) | "(", BOOLEAN EXPRESSION, ")" | SCAN ;
+SCAN = "Scanln", "(", ")" ;
 IDENTIFIER = LETTER, { LETTER | DIGIT | "_" } ;
 NUMBER = DIGIT, { DIGIT } ;
+STRING = ( `"` | `'` ), { λ | LETTER | DIGIT }, ( `"` | `'` ) ;
 LETTER = ( a | ... | z | A | ... | Z ) ;
 DIGIT = ( 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 ) ;
 ```
+
+
 
